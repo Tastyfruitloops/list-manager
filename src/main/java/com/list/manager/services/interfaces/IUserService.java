@@ -1,10 +1,11 @@
-package services.interfaces;
+package com.list.manager.services.interfaces;
 
-import entities.User;
+import com.list.manager.entities.User;
 
 import java.util.List;
 
 public interface IUserService {
+
     List <User> getAllUsers();
 
     User getUserById(Long id);

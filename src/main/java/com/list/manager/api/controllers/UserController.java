@@ -1,14 +1,14 @@
-package api.controllers;
+package com.list.manager.api.controllers;
 
-import entities.User;
+import com.list.manager.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import services.interfaces.IUserService;
+import com.list.manager.services.interfaces.IUserService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/account")
+@RequestMapping("/com/list/manager/account")
 public class UserController implements IController <User> {
 
     private final IUserService service;
@@ -45,7 +45,8 @@ public class UserController implements IController <User> {
 
     @PutMapping("/me")
     public User updateMe(@CookieValue("token") String cookie, @RequestBody String attributes){
-        return service.updateUser(Long.valueOf(cookie.split("&")[0]), attributes);
+        var id = Long.valueOf(cookie.split("&")[0]);
+        return service.updateUser(id, attributes);
     }
 
     @DeleteMapping("/me")

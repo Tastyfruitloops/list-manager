@@ -1,16 +1,16 @@
-package services.interfaces;
+package com.list.manager.services.interfaces;
 
-import dto.ItemListDto;
-import entities.ItemList;
+import com.list.manager.entities.ItemList;
 
 import java.util.List;
 
 public interface IItemListService {
+
     List <ItemList> getAllItemLists();
 
     ItemList getItemListById(Long id);
 
-    ItemList createItemList(ItemListDto list);
+    ItemList createItemList(ItemList list);
 
     ItemList updateItemList(Long id, String attributes);
 

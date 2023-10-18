@@ -1,9 +1,13 @@
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 
 
-@SpringBootApplication
+@SpringBootApplication(exclude = SecurityAutoConfiguration.class,scanBasePackages={"com.list.manager.services"})
+@ComponentScan("com.list.manager.*")
 public class Application {
     public static void main(String[] args) {
-        System.out.println("Hello world");
+        SpringApplication.run(Application.class, args);
     }
 }

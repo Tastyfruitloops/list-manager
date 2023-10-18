@@ -1,14 +1,13 @@
-package api.controllers;
+package com.list.manager.api.controllers;
 
-import dto.ItemListDto;
-import entities.ItemList;
+import com.list.manager.entities.ItemList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import services.interfaces.IItemListService;
+import com.list.manager.services.interfaces.IItemListService;
 
 
 @RestController
-@RequestMapping("/api/list")
+@RequestMapping("/com/list/manager/list")
 public class ItemListController implements IController <ItemList> {
 
     private final IItemListService service;
@@ -24,10 +23,9 @@ public class ItemListController implements IController <ItemList> {
     }
 
     @PostMapping("/")
-    public ItemList create(@RequestBody ItemListDto itemListDTO) {
-        return service.createItemList(itemListDTO);
+    public ItemList create(@RequestBody ItemList itemList) {
+        return service.createItemList(itemList);
     }
-
 
     @PutMapping("/{id}")
     public ItemList update(@PathVariable Long id, @RequestBody String attributes) {
