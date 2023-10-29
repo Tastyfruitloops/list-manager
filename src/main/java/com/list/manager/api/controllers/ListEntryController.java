@@ -1,5 +1,6 @@
 package com.list.manager.api.controllers;
 
+import com.list.manager.dto.ListEntryDto;
 import com.list.manager.entities.ListEntry;
 import com.list.manager.services.interfaces.IListEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ListEntryController implements IController <ListEntry> {
     }
 
     @PostMapping("/")
-    public ListEntry create(@RequestBody ListEntry entry) {
+    public ListEntry create(@RequestBody ListEntryDto entry) {
         return service.createEntry(entry);
     }
 

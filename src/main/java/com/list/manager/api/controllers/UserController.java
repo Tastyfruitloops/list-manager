@@ -38,6 +38,38 @@ public class UserController implements IController <User> {
         return service.createUser(user);
     }
 
+    @PostMapping("/me/open/{listId}")
+    public void openAccess(@CookieValue("token") String cookie, @PathVariable Long listId){
+        service.openAccess(
+                Long.valueOf(cookie.split("&")[0]),
+                listId
+        );
+    }
+
+    @PostMapping("/me/close/{listId}")
+    public void closeAccess(@CookieValue("token") String cookie, @PathVariable Long listId){
+        service.closeAccess(
+                Long.valueOf(cookie.split("&")[0]),
+                listId
+        );
+    }
+
+    @PostMapping("/me/archive/{listId}")
+    public void archiveList(@CookieValue("token") String cookie, @PathVariable Long listId){
+        service.archiveList(
+                Long.valueOf(cookie.split("&")[0]),
+                listId
+        );
+    }
+
+    @PostMapping("/me/unarchive/{listId}")
+    public void unarchiveList(@CookieValue("token") String cookie, @PathVariable Long listId){
+        service.unarchiveList(
+                Long.valueOf(cookie.split("&")[0]),
+                listId
+        );
+    }
+
     @PutMapping("/{id}")
     public User update(@PathVariable Long id, @RequestBody String attributes){
         return service.updateUser(id, attributes);

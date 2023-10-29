@@ -1,5 +1,6 @@
 package com.list.manager.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -46,15 +47,12 @@ public class ItemList {
         return id;
     }
 
+    @JsonIgnore
     public User getOwner() {
         return owner;
     }
 
     public List <ListEntry> getEntryList() {
-        return entryList;
-    }
-
-    public List <ListEntry> getEntryDtoList() {
         return entryList;
     }
 

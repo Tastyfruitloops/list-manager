@@ -1,5 +1,6 @@
 package com.list.manager.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -49,6 +50,7 @@ public class ListEntry {
         return Id;
     }
 
+    @JsonIgnore
     public ItemList getHostList() {
         return hostList;
     }

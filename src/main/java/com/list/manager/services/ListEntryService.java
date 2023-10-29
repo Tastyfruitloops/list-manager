@@ -1,8 +1,9 @@
 package com.list.manager.services;
 
+import com.list.manager.dto.ListEntryDto;
+import com.list.manager.repository.ListRepository;
 import com.list.manager.services.interfaces.IListEntryService;
 import com.list.manager.entities.ListEntry;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
 import com.list.manager.repository.EntryRepository;
@@ -15,10 +16,12 @@ import java.util.Optional;
 public class ListEntryService implements IListEntryService {
 
     private final EntryRepository repository;
+    private final ListRepository listRepository;
     private final BasicJsonParser parser = new BasicJsonParser();
 
-    public ListEntryService(EntryRepository repository) {
+    public ListEntryService(EntryRepository repository, ListRepository listRepository) {
         this.repository = repository;
+        this.listRepository = listRepository;
     }
 
 
@@ -38,7 +41,9 @@ public class ListEntryService implements IListEntryService {
     }
 
     @Override
-    public ListEntry createEntry(ListEntry entry) {
+    public ListEntry createEntry(ListEntryDto entryDto) {
+        var hostList = listRepository.findById(entryDto.getListId()).get();
+        var entry = new ListEntry(hostList, entryDto.getName(), entryDto.getDescription());
         return repository.save(entry);
     }
 

@@ -1,31 +1,19 @@
 package com.list.manager.dto;
 
 public class ItemListDto {
-    private final Long id;
-    private final Long userId;
-    private boolean available;
+    private final String name;
+    private final String owner;
 
-    public ItemListDto(Long id, Long userId) {
-        this.id = id;
-        this.userId = userId;
-        this.available = false;
+    public ItemListDto(String name, String owner) {
+        this.name = name;
+        this.owner = owner;
     }
 
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getOwner() {
+        return owner;
     }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
-
 }

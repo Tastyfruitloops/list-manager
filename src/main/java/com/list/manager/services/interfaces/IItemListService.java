@@ -1,5 +1,6 @@
 package com.list.manager.services.interfaces;
 
+import com.list.manager.dto.ItemListDto;
 import com.list.manager.entities.ItemList;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface IItemListService {
 
     ItemList getItemListById(Long id);
 
-    ItemList createItemList(ItemList list);
+    ItemList createItemList(ItemListDto list);
 
     ItemList updateItemList(Long id, String attributes);
 

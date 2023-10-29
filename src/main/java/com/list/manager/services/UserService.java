@@ -50,6 +50,50 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void openAccess(Long userId, Long listId) {
+        var user = repository.findById(userId).get();
+        user.getLists().forEach((list) -> {
+                    if (list.getId().equals(listId)) {
+                        list.setAvailable(true);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void closeAccess(Long userId, Long listId) {
+        var user = repository.findById(userId).get();
+        user.getLists().forEach((list) -> {
+                    if (list.getId().equals(listId)) {
+                        list.setAvailable(false);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void archiveList(Long userId, Long listId) {
+        var user = repository.findById(userId).get();
+        user.getLists().forEach((list) -> {
+                    if (list.getId().equals(listId)) {
+                        list.setArchived(true);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void unarchiveList(Long userId, Long listId) {
+        var user = repository.findById(userId).get();
+        user.getLists().forEach((list) -> {
+                    if (list.getId().equals(listId)) {
+                        list.setArchived(false);
+                    }
+                }
+        );
+    }
+
+    @Override
     public User createUser(User user) {
         return repository.save(user);
     }

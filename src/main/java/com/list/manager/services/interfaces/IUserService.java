@@ -12,6 +12,14 @@ public interface IUserService {
 
     User getUserByUsername(String username);
 
+    void openAccess(Long userId, Long listId);
+
+    void closeAccess(Long userId, Long listId);
+
+    void archiveList(Long userId, Long listId);
+
+    void unarchiveList(Long userId, Long listId);
+
     User createUser(User user);
 
     User updateUser(Long id, String attributes);

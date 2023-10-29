@@ -1,7 +1,9 @@
 package com.list.manager.services;
 
+import com.list.manager.dto.ItemListDto;
 import com.list.manager.repository.ListRepository;
 import com.list.manager.entities.ItemList;
+import com.list.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
@@ -15,11 +17,13 @@ import java.util.Optional;
 public class ItemListService implements IItemListService {
 
     private final ListRepository repository;
+    private final UserRepository userRepository;
     private final BasicJsonParser parser = new BasicJsonParser();
 
     @Autowired
-    public ItemListService(ListRepository repository) {
+    public ItemListService(ListRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -38,8 +42,10 @@ public class ItemListService implements IItemListService {
     }
 
     @Override
-    public ItemList createItemList(ItemList list) {
-        return repository.save(list);
+    public ItemList createItemList(ItemListDto list) {
+        var owner = userRepository.findByUsername(list.getOwner()).get();
+        var listDB = new ItemList(list.getName(), owner);
+        return repository.save(listDB);
     }
 
     @Override
