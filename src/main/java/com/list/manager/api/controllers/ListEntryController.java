@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/com/list/manager/list")
+@RequestMapping("/com/list/manager/entry")
 public class ListEntryController implements IController <ListEntry> {
 
     private final IListEntryService service;

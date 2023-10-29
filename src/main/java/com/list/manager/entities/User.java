@@ -34,8 +34,8 @@ public class User {
      */
     private String password;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <ItemList> lists;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <ItemList> lists = new ArrayList<>();
 
     public User() {
     }
@@ -43,7 +43,6 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.lists = new ArrayList <>();
     }
 
     public void updateByDto(UserDto dto) {

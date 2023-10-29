@@ -15,47 +15,39 @@ public class ItemList {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Long userId;
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     @Column(name = "available")
-    private boolean available;
+    private boolean available = false;
 
     @Column(name = "archived")
-    private boolean archived;
+    private boolean archived = false;
 
     @Column(name = "name")
     private String name;
+
     private UUID uuid;
 
-    @OneToMany(mappedBy = "itemList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <ListEntry> entryList;
+    @OneToMany(mappedBy = "hostList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <ListEntry> entryList = new ArrayList<>();
 
     public ItemList() {
     }
 
-    public ItemList(String name, Long userId) {
+    public ItemList(String name, User owner) {
 
-
-        this.id = id;
-
-        this.userId = userId;
+        this.owner = owner;
 
         this.name = name;
-
-        this.available = false;
-
-        this.archived = false;
-
-        this.entryList = new ArrayList <>();
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getOwner() {
+        return owner;
     }
 
     public List <ListEntry> getEntryList() {

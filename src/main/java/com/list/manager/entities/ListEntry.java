@@ -12,7 +12,7 @@ public class ListEntry {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "itemList_id")
-    private Long listId;
+    private ItemList hostList;
 
     @Column(name = "name")
     private String entryName;
@@ -23,8 +23,8 @@ public class ListEntry {
     public ListEntry() {
     }
 
-    public ListEntry(Long listId, String entryName, String description) {
-        this.listId = listId;
+    public ListEntry(ItemList hostList, String entryName, String description) {
+        this.hostList = hostList;
         this.entryName = entryName;
         this.description = description;
     }
@@ -49,7 +49,7 @@ public class ListEntry {
         return Id;
     }
 
-    public Long getListId() {
-        return listId;
+    public ItemList getHostList() {
+        return hostList;
     }
 }

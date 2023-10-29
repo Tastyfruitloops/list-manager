@@ -19,6 +19,7 @@ public class UserService implements IUserService {
 
     private final BasicJsonParser parser = new BasicJsonParser();
 
+    @Autowired
     public UserService(UserRepository repository) {
         this.repository = repository;
     }
