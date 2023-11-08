@@ -15,8 +15,8 @@ public class ListEntry {
     @JoinColumn(name = "itemList_id")
     private ItemList hostList;
 
-    @Column(name = "name")
-    private String entryName;
+    @Column(name = "text")
+    private String text;
 
     @Column(name = "description")
     private String description;
@@ -24,18 +24,18 @@ public class ListEntry {
     public ListEntry() {
     }
 
-    public ListEntry(ItemList hostList, String entryName, String description) {
+    public ListEntry(ItemList hostList, String text, String description) {
         this.hostList = hostList;
-        this.entryName = entryName;
+        this.text = text;
         this.description = description;
     }
 
-    public String getEntryName() {
-        return entryName;
+    public String getText() {
+        return text;
     }
 
-    public void setEntryName(String entryName) {
-        this.entryName = entryName;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getDescription() {

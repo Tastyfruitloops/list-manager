@@ -6,8 +6,10 @@ import com.list.manager.entities.ItemList;
 import com.list.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.list.manager.services.interfaces.IItemListService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class ItemListService implements IItemListService {
 
     @Override
     public ItemList getItemListById(Long id) {
+        //TODO: if(ifShared()) с авторизацией и куки
         Optional <ItemList> itemList = repository.findById(id);
         if (itemList.isPresent()) {
             return itemList.get();
@@ -55,6 +58,9 @@ public class ItemListService implements IItemListService {
             throw new RuntimeException("Cannot update list that doesn't exist");
         }
         DBItemList.ifPresent(itemList -> {
+                    if(itemList.isArchived()){
+                        throw new ResponseStatusException(HttpStatus.NOT_MODIFIED,"List is archived.");
+                    }
                     Map <String, Object> map = parser.parseMap(attributes);
                     map.forEach((s, o) -> {
                         switch (s) {

@@ -12,23 +12,21 @@ import java.util.UUID;
 public class ItemList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @Column(name = "available")
-    private boolean available = false;
+    @Column(name = "shared")
+    private boolean shared;
 
     @Column(name = "archived")
-    private boolean archived = false;
+    private boolean archived;
 
     @Column(name = "name")
     private String name;
-
-    private UUID uuid;
 
     @OneToMany(mappedBy = "hostList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <ListEntry> entryList = new ArrayList<>();
@@ -37,13 +35,13 @@ public class ItemList {
     }
 
     public ItemList(String name, User owner) {
-
         this.owner = owner;
-
         this.name = name;
+        this.shared = false;
+        this.archived = false;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -72,12 +70,12 @@ public class ItemList {
         this.name = name;
     }
 
-    public boolean isAvailable() {
-        return available;
+    public boolean isShared() {
+        return shared;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
+    public void setShared(boolean shared) {
+        this.shared = shared;
     }
 
     public boolean isArchived() {

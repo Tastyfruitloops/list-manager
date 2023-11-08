@@ -5,8 +5,10 @@ import com.list.manager.repository.ListRepository;
 import com.list.manager.services.interfaces.IListEntryService;
 import com.list.manager.entities.ListEntry;
 import org.springframework.boot.json.BasicJsonParser;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.list.manager.repository.EntryRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -54,10 +56,14 @@ public class ListEntryService implements IListEntryService {
             throw new RuntimeException("Cannot update entry that doesn't exist");
         }
         DBListEntry.ifPresent(entry -> {
+                    var hostList = entry.getHostList();
+                    if(hostList.isArchived()){
+                        throw new ResponseStatusException(HttpStatus.NOT_MODIFIED,"List is archived.");
+                    }
                     Map <String, Object> map = parser.parseMap(attributes);
                     map.forEach((s, o) -> {
                         switch (s) {
-                            case "name" -> entry.setEntryName(o.toString());
+                            case "name" -> entry.setText(o.toString());
                             case "description" -> entry.setDescription(o.toString());
                         }
                     });

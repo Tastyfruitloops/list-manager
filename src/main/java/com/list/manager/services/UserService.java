@@ -4,7 +4,6 @@ import com.list.manager.repository.UserRepository;
 import com.list.manager.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import com.list.manager.services.interfaces.IUserService;
 
@@ -54,7 +53,7 @@ public class UserService implements IUserService {
         var user = repository.findById(userId).get();
         user.getLists().forEach((list) -> {
                     if (list.getId().equals(listId)) {
-                        list.setAvailable(true);
+                        list.setShared(true);
                     }
                 }
         );
@@ -65,7 +64,7 @@ public class UserService implements IUserService {
         var user = repository.findById(userId).get();
         user.getLists().forEach((list) -> {
                     if (list.getId().equals(listId)) {
-                        list.setAvailable(false);
+                        list.setShared(false);
                     }
                 }
         );
