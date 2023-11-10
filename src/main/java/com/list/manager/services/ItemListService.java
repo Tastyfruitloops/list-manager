@@ -35,8 +35,10 @@ public class ItemListService implements IItemListService {
 
     @Override
     public ItemList getItemListById(Long id) {
-        //TODO: if(ifShared()) с авторизацией и куки
         Optional <ItemList> itemList = repository.findById(id);
+        if(!itemList.get().isShared()){
+            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED,"List is not shared.");
+        }
         if (itemList.isPresent()) {
             return itemList.get();
         } else {
