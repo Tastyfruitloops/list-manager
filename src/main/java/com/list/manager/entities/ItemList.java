@@ -12,8 +12,7 @@ import java.util.UUID;
 public class ItemList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
@@ -35,13 +34,14 @@ public class ItemList {
     }
 
     public ItemList(String name, User owner) {
+        this.id = uuidToBigInt(UUID.randomUUID());
         this.owner = owner;
         this.name = name;
         this.shared = false;
         this.archived = false;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -84,5 +84,8 @@ public class ItemList {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+    public static Long uuidToBigInt(UUID uuid) {
+        return uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits();
     }
 }
