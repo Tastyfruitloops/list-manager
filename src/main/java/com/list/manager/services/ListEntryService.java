@@ -64,7 +64,7 @@ public class ListEntryService implements IListEntryService {
                     map.forEach((s, o) -> {
                         switch (s) {
                             case "name" -> entry.setText(o.toString());
-                            case "description" -> entry.setDescription(o.toString());
+                            case "tag" -> entry.setTag(o.toString());
                         }
                     });
                 }

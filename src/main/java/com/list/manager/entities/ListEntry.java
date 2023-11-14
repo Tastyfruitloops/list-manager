@@ -18,16 +18,16 @@ public class ListEntry {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "tag")
+    private String tag;
 
     public ListEntry() {
     }
 
-    public ListEntry(ItemList hostList, String text, String description) {
+    public ListEntry(ItemList hostList, String text, String tag) {
         this.hostList = hostList;
         this.text = text;
-        this.description = description;
+        this.tag = tag;
     }
 
     public String getText() {
@@ -39,11 +39,11 @@ public class ListEntry {
     }
 
     public String getDescription() {
-        return description;
+        return tag;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public Long getId() {
