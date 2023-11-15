@@ -68,7 +68,7 @@ public class AuthController {
                 .maxAge(Duration.of(1, ChronoUnit.DAYS).toSecondsPart())
                 .build();
 
-        return ResponseEntity.created(URI.create("/api/users/" + createdUser.getId())).header("token", cookie.toString()).body(createdUser);
+        return ResponseEntity.created(URI.create("/api/account/" + createdUser.getId())).header("token", cookie.toString()).body(createdUser);
     }
 
     @PostMapping("/signout")

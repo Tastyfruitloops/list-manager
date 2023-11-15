@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .logout().deleteCookies(CookieAuthFilter.COOKIE_NAME)
                 .and()
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(HttpMethod.POST, "/api/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/signup", "/api/login").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
