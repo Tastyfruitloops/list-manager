@@ -33,7 +33,6 @@ public class AuthService implements IAuthService {
     }
 
     public void addCookie(Long id, String cookie) {
-        cookie = cookie.substring(0, cookie.length() - 2);
         Optional <CookieEntry> entry = getCookie(cookie);
         if (entry.isEmpty()) {
             repository.save(new CookieEntry(id, cookie));

@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class AuthController {
                 .path("/")
                 .build();
         authService.addCookie(DB_user.getId(), cookie.getValue());
-        return ResponseEntity.ok().header("token", cookie.toString()).body(DB_user);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(DB_user);
     }
 
     @PostMapping("/signup")
@@ -68,7 +69,8 @@ public class AuthController {
                 .maxAge(Duration.of(1, ChronoUnit.DAYS).toSecondsPart())
                 .build();
 
-        return ResponseEntity.created(URI.create("/api/account/" + createdUser.getId())).header("token", cookie.toString()).body(createdUser);
+
+        return ResponseEntity.created(URI.create("/api/account/" + createdUser.getId())).header(HttpHeaders.SET_COOKIE, cookie.toString()).body(createdUser);
     }
 
     @PostMapping("/signout")

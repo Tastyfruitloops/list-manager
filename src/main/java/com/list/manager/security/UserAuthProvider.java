@@ -35,6 +35,8 @@ public class UserAuthProvider {
 
     public Authentication validateCookie(String cookie) {
         Optional <CookieEntry> entry = authService.getCookie(cookie);
+        System.out.println(cookie);
+        System.out.println(entry);
         if (entry.isPresent()) {
             return new PreAuthenticatedAuthenticationToken(cookie, null, Collections.emptyList());
         } else throw new RuntimeException();
