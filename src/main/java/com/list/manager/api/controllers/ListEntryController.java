@@ -1,6 +1,7 @@
 package com.list.manager.api.controllers;
 
 import com.list.manager.dto.ListEntryDto;
+import com.list.manager.dto.TagDto;
 import com.list.manager.entities.ListEntry;
 import com.list.manager.services.interfaces.IListEntryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,15 @@ public class ListEntryController implements IController <ListEntry> {
         return service.createEntry(entry);
     }
 
+    @PostMapping("/{id}/tag")
+    public void tagEntry(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        service.tagEntry(id, tagDto);
+    }
+
+    @PostMapping("/{id}/untag")
+    public void untagEntry(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        service.untagEntry(id, tagDto);
+    }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update list entry by ID", description = "Update details of a list entry by providing entry ID.")

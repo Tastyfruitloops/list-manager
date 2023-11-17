@@ -1,6 +1,8 @@
 package com.list.manager.services;
 
 import com.list.manager.dto.ItemListDto;
+import com.list.manager.dto.TagDto;
+import com.list.manager.entities.Tag;
 import com.list.manager.repository.ListRepository;
 import com.list.manager.entities.ItemList;
 import com.list.manager.repository.UserRepository;
@@ -20,12 +22,14 @@ public class ItemListService implements IItemListService {
 
     private final ListRepository repository;
     private final UserRepository userRepository;
+    private final TagService tagService;
     private final BasicJsonParser parser = new BasicJsonParser();
 
     @Autowired
-    public ItemListService(ListRepository repository, UserRepository userRepository) {
+    public ItemListService(ListRepository repository, UserRepository userRepository, TagService tagService) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.tagService = tagService;
     }
 
     @Override
@@ -36,9 +40,6 @@ public class ItemListService implements IItemListService {
     @Override
     public ItemList getItemListById(Long id) {
         Optional <ItemList> itemList = repository.findById(id);
-        if(!itemList.get().isShared()){
-            throw new ResponseStatusException(HttpStatus.NOT_MODIFIED,"List is not shared.");
-        }
         if (itemList.isPresent()) {
             return itemList.get();
         } else {
@@ -60,8 +61,8 @@ public class ItemListService implements IItemListService {
             throw new RuntimeException("Cannot update list that doesn't exist");
         }
         DBItemList.ifPresent(itemList -> {
-                    if(itemList.isArchived()){
-                        throw new ResponseStatusException(HttpStatus.NOT_MODIFIED,"List is archived.");
+                    if (itemList.isArchived()) {
+                        throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, "List is archived.");
                     }
                     Map <String, Object> map = parser.parseMap(attributes);
                     map.forEach((s, o) -> {
@@ -82,5 +83,29 @@ public class ItemListService implements IItemListService {
         } else {
             throw new RuntimeException("Cannot delete list that doesn't exist");
         }
+    }
+
+    @Override
+    public void tagList(Long id, TagDto tagDto) {
+        this.tagService.createTag(tagDto);
+    }
+
+    @Override
+    public void untagList(Long id, TagDto tagDto) {
+        var itemList = this.getItemListById(id);
+        var optionalTag = findTagInList(itemList, tagDto);
+        if (optionalTag.isEmpty()) {
+            throw new RuntimeException("not found tag");
+        }
+        this.tagService.deleteTag(optionalTag.get().getId());
+    }
+
+    private Optional <Tag> findTagInList(ItemList itemList, TagDto tagDto) {
+        for (Tag tag : itemList.getListTags()) {
+            if (tag.getTag().equals(tagDto.getTag())) {
+                return Optional.of(tag);
+            }
+        }
+        return Optional.empty();
     }
 }

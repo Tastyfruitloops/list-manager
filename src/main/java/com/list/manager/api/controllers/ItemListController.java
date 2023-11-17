@@ -1,6 +1,7 @@
 package com.list.manager.api.controllers;
 
 import com.list.manager.dto.ItemListDto;
+import com.list.manager.dto.TagDto;
 import com.list.manager.entities.ItemList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,6 +33,16 @@ public class ItemListController implements IController <ItemList> {
     @Operation(summary = "Create list", description = "Create a new list.")
     public ItemList create(@RequestBody ItemListDto itemListDto) {
         return service.createItemList(itemListDto);
+    }
+
+    @PostMapping("/{id}/tag")
+    public void tagList(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        service.tagList(id, tagDto);
+    }
+
+    @PostMapping("/{id}/untag")
+    public void untagList(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        service.untagList(id, tagDto);
     }
 
     @PutMapping("/{id}")

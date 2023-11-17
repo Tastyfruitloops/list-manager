@@ -64,7 +64,7 @@ public class UserAccessProvider {
 
     public boolean canAccessList(RequestWrapper request) {
         String header = request.getServletPath();
-        String cutHeader = header.substring(header.lastIndexOf("board/") + 6);
+        String cutHeader = header.substring(header.lastIndexOf("list/") + 5);
         int lastSlash = cutHeader.indexOf('/');
         Long listId = lastSlash >= 0 ? Long.valueOf(cutHeader.substring(0, lastSlash)) : Long.valueOf(cutHeader);
 
@@ -80,7 +80,7 @@ public class UserAccessProvider {
 
     public boolean canManageList(RequestWrapper request) {
         String header = request.getServletPath();
-        String cutHeader = header.substring(header.lastIndexOf("board/") + 6);
+        String cutHeader = header.substring(header.lastIndexOf("list/") + 5);
         int lastSlash = cutHeader.indexOf('/');
         Long listId = lastSlash >= 0 ? Long.valueOf(cutHeader.substring(0, lastSlash)) : Long.valueOf(cutHeader);
 

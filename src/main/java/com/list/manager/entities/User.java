@@ -74,12 +74,4 @@ public class User {
     public List <ItemList> getLists() {
         return lists;
     }
-
-    public void addList(ItemList itemList) {
-        this.lists.add(itemList);
-    }
-
-    public void deleteList(ItemList itemList) {
-        this.lists.remove(itemList);
-    }
 }

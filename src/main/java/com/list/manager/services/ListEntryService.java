@@ -1,6 +1,9 @@
 package com.list.manager.services;
 
 import com.list.manager.dto.ListEntryDto;
+import com.list.manager.dto.TagDto;
+import com.list.manager.entities.ItemList;
+import com.list.manager.entities.Tag;
 import com.list.manager.repository.ListRepository;
 import com.list.manager.services.interfaces.IListEntryService;
 import com.list.manager.entities.ListEntry;
@@ -45,7 +48,7 @@ public class ListEntryService implements IListEntryService {
     @Override
     public ListEntry createEntry(ListEntryDto entryDto) {
         var hostList = listRepository.findById(entryDto.getListId()).get();
-        var entry = new ListEntry(hostList, entryDto.getName(), entryDto.getDescription());
+        var entry = new ListEntry(hostList, entryDto.getName());
         return repository.save(entry);
     }
 
@@ -57,14 +60,13 @@ public class ListEntryService implements IListEntryService {
         }
         DBListEntry.ifPresent(entry -> {
                     var hostList = entry.getHostList();
-                    if(hostList.isArchived()){
-                        throw new ResponseStatusException(HttpStatus.NOT_MODIFIED,"List is archived.");
+                    if (hostList.isArchived()) {
+                        throw new ResponseStatusException(HttpStatus.NOT_MODIFIED, "List is archived.");
                     }
                     Map <String, Object> map = parser.parseMap(attributes);
                     map.forEach((s, o) -> {
                         switch (s) {
                             case "name" -> entry.setText(o.toString());
-                            case "tag" -> entry.setTag(o.toString());
                         }
                     });
                 }
@@ -80,5 +82,33 @@ public class ListEntryService implements IListEntryService {
         } else {
             throw new RuntimeException("Cannot delete entry that doesn't exist");
         }
+    }
+
+
+    @Override
+    public void tagEntry(Long id, TagDto tagDto) {
+        var entry = this.getEntryById(id);
+        var optionalTag = findTagInList(entry.getHostList(), tagDto);
+        optionalTag.ifPresent(entry::addTag);
+    }
+
+    @Override
+    public void untagEntry(Long id, TagDto tagDto) {
+        var entry = this.getEntryById(id);
+        for (Tag tag: entry.getTagList()) {
+            if (tag.getTag() == tagDto.getTag()) {
+                entry.removeTag(tag);
+                return;
+            }
+        }
+    }
+
+    private Optional <Tag> findTagInList(ItemList itemList, TagDto tagDto) {
+        for (Tag tag : itemList.getListTags()) {
+            if (tag.getTag() == tagDto.getTag()) {
+                return Optional.of(tag);
+            }
+        }
+        return Optional.empty();
     }
 }

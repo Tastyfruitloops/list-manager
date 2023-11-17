@@ -3,6 +3,9 @@ package com.list.manager.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "entries")
 public class ListEntry {
@@ -12,22 +15,23 @@ public class ListEntry {
     private Long Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "itemList_id")
+    @JoinColumn(name = "hostList")
     private ItemList hostList;
 
     @Column(name = "text")
     private String text;
 
-    @Column(name = "tag")
-    private String tag;
+    //TODO to map
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.PERSIST)
+    private List <Tag> tagList;
 
     public ListEntry() {
     }
 
-    public ListEntry(ItemList hostList, String text, String tag) {
+    public ListEntry(ItemList hostList, String text) {
         this.hostList = hostList;
         this.text = text;
-        this.tag = tag;
+        this.tagList = new ArrayList <>();
     }
 
     public String getText() {
@@ -38,12 +42,16 @@ public class ListEntry {
         this.text = text;
     }
 
-    public String getDescription() {
-        return tag;
+    public List <Tag> getTagList() {
+        return tagList;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void addTag(Tag tag) {
+        this.tagList.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tagList.remove(tag);
     }
 
     public Long getId() {
