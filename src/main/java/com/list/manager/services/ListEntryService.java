@@ -37,9 +37,9 @@ public class ListEntryService implements IListEntryService {
 
     @Override
     public ListEntry getEntryById(Long id) {
-        Optional <ListEntry> user = repository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
+        Optional <ListEntry> entry = repository.findById(id);
+        if (entry.isPresent()) {
+            return entry.get();
         } else {
             throw new RuntimeException("Entry not found with id: " + id);
         }
@@ -48,7 +48,7 @@ public class ListEntryService implements IListEntryService {
     @Override
     public ListEntry createEntry(ListEntryDto entryDto) {
         var hostList = listRepository.findById(entryDto.getListId()).get();
-        var entry = new ListEntry(hostList, entryDto.getName());
+        var entry = new ListEntry(hostList, entryDto.getText());
         return repository.save(entry);
     }
 

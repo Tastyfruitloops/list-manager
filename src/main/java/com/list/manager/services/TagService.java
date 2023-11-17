@@ -41,10 +41,10 @@ public class TagService implements ITagService {
 
     @Override
     public void deleteTag(Long id) {
-        if (repository.findById(id).isPresent()) {
-            repository.deleteById(id);
-        } else {
-            throw new RuntimeException("Cannot delete tag that doesn't exist");
-        }
+        var optionalTag = repository.findById(id);
+        optionalTag.ifPresent(tag -> {
+            tag.getTagHostList().removeTag(tag);
+            repository.delete(tag);
+        });
     }
 }
