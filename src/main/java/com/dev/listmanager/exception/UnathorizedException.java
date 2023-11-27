@@ -1,6 +1,6 @@
 package com.dev.listmanager.exception;
 
-public class UnathorizedException extends Exception{
+public class UnathorizedException extends Exception {
     public UnathorizedException() {
         super();
     }

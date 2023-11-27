@@ -10,7 +10,10 @@ import java.util.UUID;
 
 public interface ItemListRepository extends JpaRepository<ItemList, UUID> {
     Optional<ItemList> findById(UUID id);
+
     Optional<ItemList> findByName(String name);
+
     Optional<ItemList> findByNameLikeIgnoreCase(String name);
+
     List<ItemList> findAllByOwner(User user);
 }

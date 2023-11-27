@@ -2,7 +2,10 @@ package com.dev.listmanager.service;
 
 import com.dev.listmanager.dto.ItemDto;
 import com.dev.listmanager.dto.ItemListDto;
-import com.dev.listmanager.entity.*;
+import com.dev.listmanager.entity.Item;
+import com.dev.listmanager.entity.ItemList;
+import com.dev.listmanager.entity.Tag;
+import com.dev.listmanager.entity.User;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.repository.*;
@@ -12,6 +15,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,15 +36,11 @@ public class ItemListService implements IItemListService {
     }
 
     public Item addItem(String uuid, ItemDto itemDto) {
-        List<Tag> tags = itemDto.getTagIds().stream()
-                .map(tagId -> tagRepository.findById(UUID.fromString(tagId))
-                        .orElseThrow(() -> new RuntimeException("Tag not found with ID: " + tagId)))
-                .collect(Collectors.toList());
+        List<Tag> tags = itemDto.getTagIds().stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(() -> new RuntimeException("Tag not found with ID: " + tagId))).collect(Collectors.toList());
 
-        ItemList list = repository.findById(UUID.fromString(uuid))
-                .orElseThrow(() -> new RuntimeException("ItemList not found with ID: " + uuid));
+        ItemList list = repository.findById(UUID.fromString(uuid)).orElseThrow(() -> new RuntimeException("ItemList not found with ID: " + uuid));
 
-        Item item = new Item(list,itemDto.getName(), tags);
+        Item item = new Item(list, itemDto.getName(), tags);
         list.addItem(item);
         repository.save(list);
         return itemRepository.save(item);
@@ -68,10 +68,7 @@ public class ItemListService implements IItemListService {
             for (int i = 0; i < tagsArray.length(); i++) {
                 tagIds.add(tagsArray.getString(i));
             }
-            List<Tag> tags = tagIds.stream()
-                    .map(tagId -> tagRepository.findById(UUID.fromString(tagId))
-                            .orElseThrow(RuntimeException::new))
-                    .collect(Collectors.toList());
+            List<Tag> tags = tagIds.stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(RuntimeException::new)).collect(Collectors.toList());
 
             item.setTags(tags);
         }
@@ -94,7 +91,7 @@ public class ItemListService implements IItemListService {
         tagRepository.delete(tag);
     }
 
-    public Tag updateTag(String uuid, String name) throws NotFoundException{
+    public Tag updateTag(String uuid, String name) throws NotFoundException {
         Optional<Tag> optionalTag = tagRepository.findById(UUID.fromString(uuid));
         Tag tag = optionalTag.orElseThrow(NotFoundException::new);
 
@@ -113,12 +110,14 @@ public class ItemListService implements IItemListService {
         Optional<ItemList> list = repository.findById(uuid);
         return list.orElseThrow(NotFoundException::new);
     }
+
     @Override
-    public Tag getTagById(String id) throws IllegalArgumentException, NotFoundException{
+    public Tag getTagById(String id) throws IllegalArgumentException, NotFoundException {
         UUID uuid = UUID.fromString(id);
         Optional<Tag> tag = tagRepository.findById(uuid);
         return tag.orElseThrow(NotFoundException::new);
     }
+
     @Override
     public List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException {
         String username = cookie.split("&")[0];
@@ -131,21 +130,24 @@ public class ItemListService implements IItemListService {
     }
 
     @Override
-    public ItemList getListByName(String name) throws NotFoundException{
+    public ItemList getListByName(String name) throws NotFoundException {
         Optional<ItemList> list = repository.findByName(name);
         return list.orElseThrow(NotFoundException::new);
     }
+
     @Override
-    public Item getItemById(String id) throws NotFoundException{
+    public Item getItemById(String id) throws NotFoundException {
         UUID uuid = UUID.fromString(id);
         Optional<Item> item = itemRepository.findById(uuid);
         return item.orElseThrow(NotFoundException::new);
     }
+
     @Override
-    public Item getItemByName(String name) throws NotFoundException{
+    public Item getItemByName(String name) throws NotFoundException {
         Optional<Item> item = itemRepository.findByName(name);
         return item.orElseThrow(NotFoundException::new);
     }
+
     @Override
     public List<ItemList> getListsByUserId(String userId) {
         UUID uuid = UUID.fromString(userId);
@@ -160,11 +162,11 @@ public class ItemListService implements IItemListService {
     @Override
     public ItemList createList(String cookie, ItemListDto itemListDto) throws UnathorizedException {
         String username = cookie.split("&")[0];
-        if (username.isEmpty()){
+        if (username.isEmpty()) {
             throw new UnathorizedException();
         }
-        var owner = userRepository.findByUsername(username). get();
-        var itemList = new ItemList(itemListDto.getName(),owner);
+        var owner = userRepository.findByUsername(username).get();
+        var itemList = new ItemList(itemListDto.getName(), owner);
 
         return repository.save(itemList);
     }

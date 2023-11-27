@@ -30,8 +30,7 @@ public class UserAccessProvider {
     }
 
     private String getCookieValue(RequestWrapper request) throws NotFoundException {
-        Optional<Cookie> cookie = Arrays.stream(request.getCookies())
-                .filter(c -> Objects.equals(c.getName(), "token")).findFirst();
+        Optional<Cookie> cookie = Arrays.stream(request.getCookies()).filter(c -> Objects.equals(c.getName(), "token")).findFirst();
 
         if (cookie.isEmpty()) {
             throw new NotFoundException("Token cookie was not found");

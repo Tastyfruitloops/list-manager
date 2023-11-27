@@ -25,19 +25,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors().and().csrf().disable()
-                .addFilterBefore(new AccessFilter(userAccessProvider), BasicAuthenticationFilter.class)
-                .addFilterBefore(new UserPresenceFilter(userAuthProvider), AccessFilter.class)
-                .addFilterBefore(new CookieAuthFilter(userAuthProvider), UserPresenceFilter.class)
-                .logout().deleteCookies(CookieAuthFilter.COOKIE_NAME)
-                .and()
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-        ;
+        http.cors().and().csrf().disable().addFilterBefore(new AccessFilter(userAccessProvider), BasicAuthenticationFilter.class).addFilterBefore(new UserPresenceFilter(userAuthProvider), AccessFilter.class).addFilterBefore(new CookieAuthFilter(userAuthProvider), UserPresenceFilter.class).logout().deleteCookies(CookieAuthFilter.COOKIE_NAME).and().authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login").permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated());
         return http.build();
     }
 

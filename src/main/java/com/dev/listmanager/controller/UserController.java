@@ -25,16 +25,19 @@ public class UserController {
         User user = service.getUserByUsername(cookie.split("&")[0]);
         return ResponseEntity.ok().body(user);
     }
+
     @GetMapping("/")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> listUsers = service.getAllUsers();
         return ResponseEntity.ok().body(listUsers);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id) throws NotFoundException {
         User user = service.getUserById(id);
         return ResponseEntity.ok().body(user);
     }
+
     @PutMapping("/me")
     public ResponseEntity<String> updateUser(@CookieValue("token") String cookie, @RequestBody String attributes) throws NotFoundException {
         String username = cookie.split("&")[0];

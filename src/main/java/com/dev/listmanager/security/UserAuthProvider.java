@@ -37,7 +37,8 @@ public class UserAuthProvider {
         Optional<UserCookie> optionalCookie = authService.findCookie(cookie);
         if (optionalCookie.isPresent()) {
             return new PreAuthenticatedAuthenticationToken(cookie, null, Collections.emptyList());
-        } else throw new RuntimeException("Invalid cookie");
+        } else
+            throw new RuntimeException("Invalid cookie");
     }
 
     public Authentication validateCredentials(UserDto userDto) throws NotFoundException {

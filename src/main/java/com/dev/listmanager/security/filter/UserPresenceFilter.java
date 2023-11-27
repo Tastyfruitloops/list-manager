@@ -4,7 +4,6 @@ import com.dev.listmanager.dto.UserDto;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.security.UserAuthProvider;
 import com.dev.listmanager.util.RequestWrapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

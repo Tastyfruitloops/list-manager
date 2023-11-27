@@ -12,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService implements IUserService {
@@ -48,7 +44,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User createUser(UserDto userDto){
+    public User createUser(UserDto userDto) {
         User user = new User(userDto.getUsername(), userDto.getPassword());
 
         Validator validator = validatorFactory.getValidator();
@@ -69,14 +65,13 @@ public class UserService implements IUserService {
             throw new NotFoundException();
         }
         optionalUser.ifPresent(user -> {
-                    Map<String, Object> map = parser.parseMap(attributes);
-                    map.forEach((s, o) -> {
-                        switch (s) {
-                            case "password" -> user.setPassword(user.getHashedPassword());
-                        }
-                    });
+            Map<String, Object> map = parser.parseMap(attributes);
+            map.forEach((s, o) -> {
+                switch (s) {
+                    case "password" -> user.setPassword(user.getHashedPassword());
                 }
-                );
+            });
+        });
 
         return repository.save(optionalUser.get());
     }

@@ -22,12 +22,8 @@ public class Item {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ItemList hostList;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinTable(
-            name = "item_tags",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @JoinTable(name = "item_tags", joinColumns = @JoinColumn(name = "item_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
 
     public Item() {
@@ -50,6 +46,7 @@ public class Item {
     public List<Tag> getTags() {
         return tags;
     }
+
     @JsonIgnore
     public ItemList getList() {
         return hostList;

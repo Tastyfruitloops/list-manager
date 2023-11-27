@@ -1,4 +1,5 @@
 package com.dev.listmanager.entity;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -61,9 +62,11 @@ public class ItemList {
     public List<Item> getItems() {
         return items;
     }
-    public List<Tag> getTags(){
+
+    public List<Tag> getTags() {
         return tags;
     }
+
     public boolean isPublic() {
         return isPublic;
     }

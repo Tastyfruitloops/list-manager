@@ -18,6 +18,7 @@ public class AccessFilter extends OncePerRequestFilter {
     public AccessFilter(UserAccessProvider userAccessProvider) {
         this.accessProvider = userAccessProvider;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         RequestWrapper requestCopy = new RequestWrapper(request);
