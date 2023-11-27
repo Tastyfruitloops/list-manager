@@ -3,15 +3,15 @@ package com.dev.listmanager.security;
 import com.dev.listmanager.entity.ItemList;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.service.ItemListService;
-import com.dev.listmanager.service.UserService;
 import com.dev.listmanager.util.RequestWrapper;
 import jakarta.servlet.http.Cookie;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
+@Component
 public class UserAccessProvider {
     private final ItemListService listService;
 

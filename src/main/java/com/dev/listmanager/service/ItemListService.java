@@ -120,6 +120,17 @@ public class ItemListService implements IItemListService {
         return tag.orElseThrow(NotFoundException::new);
     }
     @Override
+    public List<ItemList> getListsByCookie(String cookie) throws UnathorizedException {
+        String username = cookie.split("&")[0];
+        if (username.isEmpty()) {
+            throw new UnathorizedException();
+        }
+
+        User owner = userRepository.findByUsername(username).orElseThrow(UnathorizedException::new);
+        return repository.findAllByOwner(owner);
+    }
+
+    @Override
     public ItemList getListByName(String name) throws NotFoundException{
         Optional<ItemList> list = repository.findByName(name);
         return list.orElseThrow(NotFoundException::new);
@@ -152,7 +163,7 @@ public class ItemListService implements IItemListService {
         if (username.isEmpty()){
             throw new UnathorizedException();
         }
-        var owner = userRepository.findByUsername(username).get();
+        var owner = userRepository.findByUsername(username). get();
         var itemList = new ItemList(itemListDto.getName(),owner);
 
         return repository.save(itemList);

@@ -50,7 +50,7 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         SecurityContextHolder.clearContext();
         Optional<Cookie> authCookie = Stream.of(Optional.ofNullable(request.getCookies())
-                .orElse(new Cookie[0]))
+                        .orElse(new Cookie[0]))
                 .filter(cookie -> CookieAuthFilter.COOKIE_NAME.equals(cookie.getName()))
                 .findFirst();
         authCookie.ifPresent(cookie -> {
@@ -61,7 +61,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, "")
                 .httpOnly(false)
                 .sameSite("None")
-                .secure(false)
+                .secure(true)
                 .maxAge(0)
                 .path("/")
                 .build();
@@ -73,7 +73,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, authService.createToken(user))
                 .httpOnly(false)
                 .sameSite("None")
-                .secure(false)
+                .secure(true)
                 .maxAge(1000 * 60 * 60 * 24)
                 .path("/")
                 .build();
