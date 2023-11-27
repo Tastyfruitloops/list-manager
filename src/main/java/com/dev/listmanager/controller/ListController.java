@@ -9,7 +9,6 @@ import com.dev.listmanager.entity.Tag;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.service.interfaces.IItemListService;
-import com.dev.listmanager.service.interfaces.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +25,12 @@ public class ListController {
 
     private final IItemListService itemListService;
 
-    private final IUserService userService;
-
     @Autowired
-    public ListController(IItemListService itemListService, IUserService userService) {
+    public ListController(IItemListService itemListService) {
         this.itemListService = itemListService;
-        this.userService = userService;
     }
 
-    @GetMapping("/me")
+    @GetMapping("/")
     public ResponseEntity<List<ItemList>> getMyLists(@CookieValue("token") String cookie) throws UnathorizedException, NotFoundException {
         List<ItemList> list = itemListService.getListsByCookie(cookie);
         return ResponseEntity.ok().body(list);

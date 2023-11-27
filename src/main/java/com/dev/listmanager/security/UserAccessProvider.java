@@ -19,14 +19,25 @@ public class UserAccessProvider {
         this.listService = listService;
     }
 
+    public boolean canAccessList(RequestWrapper request) {
+        String path = request.getServletPath();
+        String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
+
+        try {
+            return hasAccess(uuid, getUsernameFromCookie(getCookieValue(request)));
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
     private boolean hasAccess(String uuid, String username) throws NotFoundException {
         ItemList list = listService.getListById(uuid);
         return list.getOwner().getUsername().equals(username) || list.isPublic();
     }
 
-    private boolean canModify(String uuid, String username) throws NotFoundException {
-        ItemList list = listService.getListById(uuid);
-        return list.getOwner().getUsername().equals(username);
+    private String getUsernameFromCookie(String cookie) {
+        int idx = cookie.indexOf('&');
+        return cookie.substring(0, idx);
     }
 
     private String getCookieValue(RequestWrapper request) throws NotFoundException {
@@ -44,21 +55,6 @@ public class UserAccessProvider {
         return value.substring(0, value.length() - 1);
     }
 
-    public boolean canAccessList(RequestWrapper request) {
-        String path = request.getServletPath();
-        String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
-
-        if (uuid.equals("me")) {
-            return true;
-        }
-
-        try {
-            return hasAccess(uuid, getUsernameFromCookie(getCookieValue(request)));
-        } catch (NotFoundException e) {
-            return false;
-        }
-    }
-
     public boolean canModifyList(RequestWrapper request) {
         String path = request.getServletPath();
         String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
@@ -70,8 +66,8 @@ public class UserAccessProvider {
         }
     }
 
-    private String getUsernameFromCookie(String cookie) {
-        int idx = cookie.indexOf('&');
-        return cookie.substring(0, idx);
+    private boolean canModify(String uuid, String username) throws NotFoundException {
+        ItemList list = listService.getListById(uuid);
+        return list.getOwner().getUsername().equals(username);
     }
 }

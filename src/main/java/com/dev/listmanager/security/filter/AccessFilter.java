@@ -25,7 +25,7 @@ public class AccessFilter extends OncePerRequestFilter {
         if (HttpMethod.GET.matches(requestCopy.getMethod())) {
             String servletPath = requestCopy.getServletPath();
             if (servletPath.startsWith("/lists")) {
-                if (!accessProvider.canAccessList(requestCopy)) {
+                if (!servletPath.equals("/lists/") && !accessProvider.canAccessList(requestCopy)) {
                     SecurityContextHolder.clearContext();
                 }
             }
