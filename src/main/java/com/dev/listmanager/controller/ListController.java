@@ -10,77 +10,98 @@ import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.service.interfaces.IItemListService;
 import com.dev.listmanager.service.interfaces.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/lists")
 public class ListController {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ListController.class);
+
     private final IItemListService itemListService;
 
-    private final IUserService  userService;
+    private final IUserService userService;
+
     @Autowired
-    public ListController(IItemListService itemListService,IUserService userService){
+    public ListController(IItemListService itemListService, IUserService userService) {
         this.itemListService = itemListService;
         this.userService = userService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity <List <ItemList>> getMyLists(@CookieValue("token") String cookie) throws UnathorizedException, NotFoundException {
+        List <ItemList> list = itemListService.getListsByCookie(cookie);
+        return ResponseEntity.ok().body(list);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<ItemList> getById(@PathVariable String id) throws NotFoundException{
+    public ResponseEntity <ItemList> getById(@PathVariable String id) throws NotFoundException {
         ItemList list = itemListService.getListById(id);
         return ResponseEntity.ok().body(list);
     }
+
     @PostMapping("/")
-    public ResponseEntity<ItemList> createList(@CookieValue("token") String cookie, @RequestBody ItemListDto itemListDto) throws UnathorizedException, NotFoundException {
-        itemListService.createList(cookie,itemListDto);
+    public ResponseEntity <ItemList> createList(@CookieValue("token") String cookie, @RequestBody ItemListDto itemListDto) throws UnathorizedException, NotFoundException {
+        itemListService.createList(cookie, itemListDto);
         ItemList list = itemListService.getListByName(itemListDto.getName());
         return ResponseEntity.ok().body(list);
     }
+
     @PostMapping("/{id}/item")
-    public ResponseEntity<Item> createItem(@PathVariable String id, @RequestBody ItemDto itemDto) throws NotFoundException {
-        itemListService.addItem(id,itemDto);
+    public ResponseEntity <Item> createItem(@PathVariable String id, @RequestBody ItemDto itemDto) throws NotFoundException {
+        itemListService.addItem(id, itemDto);
         Item item = itemListService.getItemByName(itemDto.getName());
         return ResponseEntity.ok().body(item);
     }
+
     @PostMapping("/{id}/tag")
-    public ResponseEntity<ItemList> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
+    public ResponseEntity <ItemList> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
         itemListService.addTag(id, tagDto.getName());
         ItemList list = itemListService.getListById(id);
         return ResponseEntity.ok().body(list);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<ItemList> updateList(@PathVariable String id, @RequestBody String attributes) throws NotFoundException {
+    public ResponseEntity <ItemList> updateList(@PathVariable String id, @RequestBody String attributes) throws NotFoundException {
         itemListService.updateList(id, attributes);
         ItemList list = itemListService.getListById(id);
         return ResponseEntity.ok().body(list);
     }
+
     @PutMapping("/item/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable String id, @RequestBody String attributes) throws NotFoundException {
-        itemListService.updateItem(id,attributes);
+    public ResponseEntity <Item> updateItem(@PathVariable String id, @RequestBody String attributes) throws NotFoundException {
+        itemListService.updateItem(id, attributes);
         Item item = itemListService.getItemById(id);
         return ResponseEntity.ok().body(item);
     }
+
     @PutMapping("/tag/{id}")
-    public ResponseEntity<Tag> updateTag(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
+    public ResponseEntity <Tag> updateTag(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
         itemListService.updateTag(id, tagDto.getName());
         Tag tag = itemListService.getTagById(id);
         return ResponseEntity.ok().body(tag);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteList(@PathVariable String id) throws NotFoundException {
+    public ResponseEntity <String> deleteList(@PathVariable String id) throws NotFoundException {
         itemListService.deleteList(id);
         return ResponseEntity.ok().body("List was successfully deleted!");
     }
+
     @DeleteMapping("/item/{id}")
-    public ResponseEntity<String> deleteItem(@PathVariable String id) throws NotFoundException{
+    public ResponseEntity <String> deleteItem(@PathVariable String id) throws NotFoundException {
         itemListService.deleteItem(id);
         return ResponseEntity.ok().body("Item was successfully deleted!");
     }
+
     @DeleteMapping("/tag/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable String id) throws NotFoundException{
+    public ResponseEntity <String> deleteTag(@PathVariable String id) throws NotFoundException {
         itemListService.deleteTag(id);
         return ResponseEntity.ok().body("Tag was successfully deleted!");
     }

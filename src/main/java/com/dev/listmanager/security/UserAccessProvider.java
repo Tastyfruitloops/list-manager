@@ -49,8 +49,12 @@ public class UserAccessProvider {
         String path = request.getServletPath();
         String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
 
+        if (uuid.equals("me")) {
+            return true;
+        }
+
         try {
-            return hasAccess(uuid, getCookieValue(request));
+            return hasAccess(uuid, getUsernameFromCookie(getCookieValue(request)));
         } catch (NotFoundException e) {
             return false;
         }
@@ -61,9 +65,14 @@ public class UserAccessProvider {
         String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
 
         try {
-            return canModify(uuid, getCookieValue(request));
+            return canModify(uuid, getUsernameFromCookie(getCookieValue(request)));
         } catch (NotFoundException e) {
             return false;
         }
+    }
+
+    private String getUsernameFromCookie(String cookie) {
+        int idx = cookie.indexOf('&');
+        return cookie.substring(0, idx);
     }
 }

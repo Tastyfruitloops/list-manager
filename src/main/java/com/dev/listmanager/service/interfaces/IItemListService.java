@@ -24,7 +24,7 @@ public interface IItemListService {
     Item getItemByName(String name) throws NotFoundException;
     Item getItemById(String id) throws NotFoundException;
     List<ItemList> getListsByUserId(String userId);
-    List<ItemList> getListsByCookie(String cookie) throws UnathorizedException;
+    List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException;
     ItemList createList(String cookie,ItemListDto list) throws UnathorizedException;
     ItemList updateList(String id, String attributes);
     void deleteList(String id) throws NotFoundException;

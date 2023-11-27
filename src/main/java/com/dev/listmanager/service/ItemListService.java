@@ -120,13 +120,13 @@ public class ItemListService implements IItemListService {
         return tag.orElseThrow(NotFoundException::new);
     }
     @Override
-    public List<ItemList> getListsByCookie(String cookie) throws UnathorizedException {
+    public List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException {
         String username = cookie.split("&")[0];
         if (username.isEmpty()) {
             throw new UnathorizedException();
         }
 
-        User owner = userRepository.findByUsername(username).orElseThrow(UnathorizedException::new);
+        User owner = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
         return repository.findAllByOwner(owner);
     }
 
