@@ -8,14 +8,18 @@ import com.dev.listmanager.service.interfaces.IUserService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private final UserRepository repository;
     private final BasicJsonParser parser = new BasicJsonParser();
     private final ValidatorFactory validatorFactory;
@@ -32,9 +36,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserById(String id) throws NotFoundException {
+    public User getUserById(String requesterUsername, String id) throws NotFoundException {
         Optional<User> user = repository.findById(UUID.fromString(id));
-        return user.orElseThrow(NotFoundException::new);
+
+        User dbUser = user.orElseThrow(NotFoundException::new);
+
+        if (!dbUser.getUsername().equals(requesterUsername)) {
+            dbUser.setLists(dbUser.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived()).collect(Collectors.toList()));
+        }
+        return dbUser;
     }
 
     @Override
@@ -54,7 +64,7 @@ public class UserService implements IUserService {
         if (!violations.isEmpty() || !passwordViolations.isEmpty()) {
             throw new IllegalArgumentException(violations.toString());
         }
-
+        LOGGER.debug("User {} created", user.getId());
         return repository.save(user);
     }
 
@@ -72,13 +82,14 @@ public class UserService implements IUserService {
                 }
             });
         });
-
+        LOGGER.debug("User {} updated", optionalUser.get().getId());
         return repository.save(optionalUser.get());
     }
 
     @Override
     public void deleteUser(String id) throws NotFoundException {
         User user = repository.findById(UUID.fromString(id)).orElseThrow(NotFoundException::new);
+        LOGGER.debug("User {} deleted", user.getId());
         repository.delete(user);
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface IUserService {
     List<User> getAllUsers();
 
-    User getUserById(String id) throws NotFoundException;
+    User getUserById(String requesterUsername, String id) throws NotFoundException;
 
     User getUserByUsername(String username) throws NotFoundException;
 

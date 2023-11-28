@@ -3,7 +3,7 @@ package com.dev.listmanager.security;
 import com.dev.listmanager.dto.UserDto;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.entity.UserCookie;
-import com.dev.listmanager.exception.NotFoundException;
+import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.service.AuthService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +19,9 @@ import java.util.Optional;
 @Component
 public class UserAuthProvider {
 
+    private final AuthService authService;
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
-    private final AuthService authService;
 
 
     public UserAuthProvider(AuthService authService) {
@@ -41,7 +41,7 @@ public class UserAuthProvider {
             throw new RuntimeException("Invalid cookie");
     }
 
-    public Authentication validateCredentials(UserDto userDto) throws NotFoundException {
+    public Authentication validateCredentials(UserDto userDto) throws UnathorizedException {
         User user = authService.authenticate(userDto);
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
     }

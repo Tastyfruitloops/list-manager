@@ -9,8 +9,6 @@ import com.dev.listmanager.entity.Tag;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.service.interfaces.IItemListService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,8 +19,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/lists")
 public class ListController {
-    public static final Logger LOGGER = LoggerFactory.getLogger(ListController.class);
-
     private final IItemListService itemListService;
 
     @Autowired

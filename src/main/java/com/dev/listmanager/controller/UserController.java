@@ -33,8 +33,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable String id) throws NotFoundException {
-        User user = service.getUserById(id);
+    public ResponseEntity<User> getUserById(@CookieValue("token") String cookie, @PathVariable String id) throws NotFoundException {
+        String requesterUsername = cookie.split("&")[0];
+        User user = service.getUserById(requesterUsername, id);
         return ResponseEntity.ok().body(user);
     }
 

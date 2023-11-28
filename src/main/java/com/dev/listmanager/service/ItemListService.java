@@ -12,6 +12,8 @@ import com.dev.listmanager.repository.*;
 import com.dev.listmanager.service.interfaces.IItemListService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ItemListService implements IItemListService {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ItemListService.class);
     private final ItemListRepository repository;
     private final ItemRepository itemRepository;
     private final TagRepository tagRepository;
@@ -43,6 +46,7 @@ public class ItemListService implements IItemListService {
         Item item = new Item(list, itemDto.getName(), tags);
         list.addItem(item);
         repository.save(list);
+        LOGGER.debug("Item {} added to list {}", item.getId(), list.getId());
         return itemRepository.save(item);
     }
 
@@ -50,6 +54,7 @@ public class ItemListService implements IItemListService {
         Item item = itemRepository.findById(UUID.fromString(uuid)).orElseThrow(NotFoundException::new);
         ItemList list = item.getList();
         list.removeItem(item);
+        LOGGER.debug("Item {} removed from list {}", item.getId(), list.getId());
         itemRepository.delete(item);
     }
 
@@ -72,6 +77,7 @@ public class ItemListService implements IItemListService {
 
             item.setTags(tags);
         }
+        LOGGER.debug("Item {} updated", item.getId());
         return itemRepository.save(item);
     }
 
@@ -81,6 +87,7 @@ public class ItemListService implements IItemListService {
 
         Tag tag = new Tag(name, list);
         list.addTag(tag);
+        LOGGER.debug("Tag {} added to list {}", tag.getId(), list.getId());
         return tagRepository.save(tag);
     }
 
@@ -88,6 +95,7 @@ public class ItemListService implements IItemListService {
         Tag tag = tagRepository.findById(UUID.fromString(uuid)).orElseThrow(NotFoundException::new);
         ItemList list = tag.getList();
         list.removeTag(tag);
+        LOGGER.debug("Tag {} removed from list {}", tag.getId(), list.getId());
         tagRepository.delete(tag);
     }
 
@@ -96,6 +104,7 @@ public class ItemListService implements IItemListService {
         Tag tag = optionalTag.orElseThrow(NotFoundException::new);
 
         tag.setName(name);
+        LOGGER.debug("Tag {} updated", tag.getId());
         return tagRepository.save(tag);
     }
 
@@ -119,32 +128,21 @@ public class ItemListService implements IItemListService {
     }
 
     @Override
-    public List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException {
-        String username = cookie.split("&")[0];
-        if (username.isEmpty()) {
-            throw new UnathorizedException();
-        }
-
-        User owner = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
-        return repository.findAllByOwner(owner);
-    }
-
-    @Override
     public ItemList getListByName(String name) throws NotFoundException {
         Optional<ItemList> list = repository.findByName(name);
         return list.orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public Item getItemById(String id) throws NotFoundException {
-        UUID uuid = UUID.fromString(id);
-        Optional<Item> item = itemRepository.findById(uuid);
+    public Item getItemByName(String name) throws NotFoundException {
+        Optional<Item> item = itemRepository.findByName(name);
         return item.orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public Item getItemByName(String name) throws NotFoundException {
-        Optional<Item> item = itemRepository.findByName(name);
+    public Item getItemById(String id) throws NotFoundException {
+        UUID uuid = UUID.fromString(id);
+        Optional<Item> item = itemRepository.findById(uuid);
         return item.orElseThrow(NotFoundException::new);
     }
 
@@ -160,6 +158,17 @@ public class ItemListService implements IItemListService {
     }
 
     @Override
+    public List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException {
+        String username = cookie.split("&")[0];
+        if (username.isEmpty()) {
+            throw new UnathorizedException();
+        }
+
+        User owner = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
+        return repository.findAllByOwner(owner);
+    }
+
+    @Override
     public ItemList createList(String cookie, ItemListDto itemListDto) throws UnathorizedException {
         String username = cookie.split("&")[0];
         if (username.isEmpty()) {
@@ -167,7 +176,7 @@ public class ItemListService implements IItemListService {
         }
         var owner = userRepository.findByUsername(username).get();
         var itemList = new ItemList(itemListDto.getName(), owner);
-
+        LOGGER.debug("List {} created, owner {}", itemList.getId(), owner.getId());
         return repository.save(itemList);
     }
 
@@ -184,13 +193,14 @@ public class ItemListService implements IItemListService {
                 case "archived" -> list.setArchived(Boolean.parseBoolean((String) value));
             }
         });
-
+        LOGGER.debug("List {} updated", list.getId());
         return repository.save(list);
     }
 
     @Override
     public void deleteList(String id) throws NotFoundException {
         ItemList itemList = repository.findById(UUID.fromString(id)).orElseThrow(NotFoundException::new);
+        LOGGER.debug("List {} deleted", id);
         repository.delete(itemList);
     }
 }
