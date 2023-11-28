@@ -55,12 +55,25 @@ public class ItemList {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public User getOwner() {
         return owner;
     }
 
+    @JsonProperty
+    public UUID getOwnerId() {
+        return owner.getId();
+    }
+
     public List<Item> getItems() {
         return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 
     public List<Tag> getTags() {
@@ -71,8 +84,16 @@ public class ItemList {
         return isPublic;
     }
 
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
     public boolean isArchived() {
         return isArchived;
+    }
+
+    public void setArchived(boolean isArchived) {
+        this.isArchived = isArchived;
     }
 
     public void addItem(Item item) {
@@ -81,22 +102,6 @@ public class ItemList {
 
     public void removeItem(Item item) {
         items.remove(item);
-    }
-
-    public void setPublic(boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    public void setArchived(boolean isArchived) {
-        this.isArchived = isArchived;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void addTag(Tag tag) {
