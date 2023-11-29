@@ -1,8 +1,14 @@
 package com.dev.listmanager.service;
 
 import com.dev.listmanager.dto.UserDto;
+import com.dev.listmanager.entity.Item;
+import com.dev.listmanager.entity.ItemList;
+import com.dev.listmanager.entity.Tag;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.exception.NotFoundException;
+import com.dev.listmanager.repository.ItemListRepository;
+import com.dev.listmanager.repository.ItemRepository;
+import com.dev.listmanager.repository.TagRepository;
 import com.dev.listmanager.repository.UserRepository;
 import com.dev.listmanager.service.interfaces.IUserService;
 import jakarta.validation.ConstraintViolation;
@@ -21,12 +27,18 @@ import java.util.stream.Collectors;
 public class UserService implements IUserService {
     public static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private final UserRepository repository;
+    private final ItemListRepository itemListRepository;
+    private final ItemRepository itemRepository;
+    private final TagRepository tagRepository;
     private final BasicJsonParser parser = new BasicJsonParser();
     private final ValidatorFactory validatorFactory;
 
     @Autowired
-    public UserService(UserRepository repository, ValidatorFactory validatorFactory) {
+    public UserService(UserRepository repository, ItemListRepository itemListRepository, ItemRepository itemRepository, TagRepository tagRepository, ValidatorFactory validatorFactory) {
         this.repository = repository;
+        this.itemListRepository = itemListRepository;
+        this.itemRepository = itemRepository;
+        this.tagRepository = tagRepository;
         this.validatorFactory = validatorFactory;
     }
 
@@ -42,8 +54,7 @@ public class UserService implements IUserService {
         User user = optionalUser.orElseThrow(NotFoundException::new);
 
         if (!user.getUsername().equals(requesterUsername)) {
-            user.setLists(user.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived())
-                    .collect(Collectors.toList()));
+            user.setLists(user.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived()).collect(Collectors.toList()));
         }
         return user;
     }
@@ -89,6 +100,38 @@ public class UserService implements IUserService {
         User user = repository.findById(UUID.fromString(id)).orElseThrow(NotFoundException::new);
         LOGGER.debug("User {} deleted", user.getId());
         repository.delete(user);
+    }
+
+    @Override
+    public void createTemplateListForUser(User user) {
+        ItemList sampleList = new ItemList("My favourite movies", user);
+        itemListRepository.save(sampleList);
+        List<Tag> tagList = new ArrayList<>();
+        tagList.add(new Tag("Drama", sampleList));
+        tagList.add(new Tag("Action", sampleList));
+        tagList.add(new Tag("Crime", sampleList));
+        tagList.add(new Tag("Sci-Fi", sampleList));
+        tagList.add(new Tag("Comedy", sampleList));
+        tagList.add(new Tag("Romance", sampleList));
+        tagList.add(new Tag("Thriller", sampleList));
+        tagList.forEach(tag -> {
+            tagRepository.save(tag);
+            sampleList.addTag(tag);
+        });
+        itemListRepository.save(sampleList);
+        List<Item> sampleItems = new ArrayList<>();
+        sampleItems.add(new Item(sampleList, "The Shawshank Redemption", new ArrayList<>(List.of(tagList.get(0)))));
+        sampleItems.add(new Item(sampleList, "The Dark Knight", new ArrayList<>(List.of(tagList.get(0), tagList.get(1), tagList.get(2)))));
+        sampleItems.add(new Item(sampleList, "Inception", new ArrayList<>(List.of(tagList.get(3), tagList.get(1), tagList.get(6)))));
+        sampleItems.add(new Item(sampleList, "Forrest Gump", new ArrayList<>(List.of(tagList.get(4), tagList.get(0), tagList.get(5)))));
+        sampleItems.add(new Item(sampleList, "The Matrix", new ArrayList<>(List.of(tagList.get(3), tagList.get(1)))));
+        sampleItems.forEach(item -> {
+            itemRepository.save(item);
+            sampleList.addItem(item);
+        });
+        user.addList(sampleList);
+        repository.save(user);
+
     }
 
     public Optional<User> getUserByUsernameOptional(String username) {

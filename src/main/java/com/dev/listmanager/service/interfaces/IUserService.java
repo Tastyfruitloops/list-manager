@@ -18,4 +18,6 @@ public interface IUserService {
     User updateUser(String id, String attributes) throws NotFoundException;
 
     void deleteUser(String id) throws NotFoundException;
+
+    void createTemplateListForUser(User user);
 }

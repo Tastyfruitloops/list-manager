@@ -67,6 +67,10 @@ public class User {
         return lists.stream().filter(ItemList::isPublic).collect(Collectors.toList());
     }
 
+    public void addList(ItemList list) {
+        this.lists.add(list);
+    }
+
     public void setPassword(String password) {
         this.password = pwEncoder.encode(password);
     }

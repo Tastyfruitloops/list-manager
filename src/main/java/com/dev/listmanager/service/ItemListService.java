@@ -42,9 +42,7 @@ public class ItemListService implements IItemListService {
     }
 
     public Item addItem(String uuid, ItemDto itemDto) {
-        List<Tag> tags = itemDto.getTagIds().stream()
-                .map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(IllegalArgumentException::new))
-                .collect(Collectors.toList());
+        List<Tag> tags = itemDto.getTagIds().stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(IllegalArgumentException::new)).collect(Collectors.toList());
 
         ItemList list = repository.findById(UUID.fromString(uuid)).orElseThrow(IllegalArgumentException::new);
 
@@ -78,9 +76,7 @@ public class ItemListService implements IItemListService {
             for (int i = 0; i < tagsArray.length(); i++) {
                 tagIds.add(tagsArray.getString(i));
             }
-            List<Tag> tags = tagIds.stream()
-                    .map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(RuntimeException::new))
-                    .collect(Collectors.toList());
+            List<Tag> tags = tagIds.stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(RuntimeException::new)).collect(Collectors.toList());
 
             item.setTags(tags);
         }

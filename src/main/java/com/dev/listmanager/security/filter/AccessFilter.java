@@ -22,7 +22,7 @@ public class AccessFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         RequestWrapper requestCopy = new RequestWrapper(request);
-        
+
         if (HttpMethod.GET.matches(requestCopy.getMethod())) {
             String servletPath = requestCopy.getServletPath();
             if (servletPath.startsWith("/lists")) {
