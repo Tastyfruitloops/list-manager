@@ -32,7 +32,7 @@ public class LoggingService implements ILoggingService {
             stringBuilder.append("\u001B[32m"); // Green color
         } else if (statusCode >= 300 && statusCode < 400) {
             stringBuilder.append("\u001B[33m"); // Yellow color
-        } else if (statusCode >= 400 && statusCode < 500) {
+        } else if (statusCode >= 400) {
             stringBuilder.append("\u001B[31m"); // Red color
         } else {
             stringBuilder.append("\u001B[0m"); // Default color

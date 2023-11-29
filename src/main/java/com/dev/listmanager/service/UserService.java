@@ -37,14 +37,15 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserById(String requesterUsername, String id) throws NotFoundException {
-        Optional<User> user = repository.findById(UUID.fromString(id));
+        Optional<User> optionalUser = repository.findById(UUID.fromString(id));
 
-        User dbUser = user.orElseThrow(NotFoundException::new);
+        User user = optionalUser.orElseThrow(NotFoundException::new);
 
-        if (!dbUser.getUsername().equals(requesterUsername)) {
-            dbUser.setLists(dbUser.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived()).collect(Collectors.toList()));
+        if (!user.getUsername().equals(requesterUsername)) {
+            user.setLists(user.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived())
+                    .collect(Collectors.toList()));
         }
-        return dbUser;
+        return user;
     }
 
     @Override
@@ -70,20 +71,17 @@ public class UserService implements IUserService {
 
     @Override
     public User updateUser(String username, String attributes) throws NotFoundException {
-        Optional<User> optionalUser = repository.findByUsername(username);
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException();
-        }
-        optionalUser.ifPresent(user -> {
-            Map<String, Object> map = parser.parseMap(attributes);
-            map.forEach((s, o) -> {
-                switch (s) {
-                    case "password" -> user.setPassword(user.getHashedPassword());
-                }
-            });
+        User user = repository.findByUsername(username).orElseThrow(NotFoundException::new);
+
+        Map<String, Object> map = parser.parseMap(attributes);
+        map.forEach((s, o) -> {
+            if (s.equals("password")) {
+                user.setPassword(user.getHashedPassword());
+            }
         });
-        LOGGER.debug("User {} updated", optionalUser.get().getId());
-        return repository.save(optionalUser.get());
+
+        LOGGER.debug("User {} updated", user.getId());
+        return repository.save(user);
     }
 
     @Override

@@ -62,20 +62,15 @@ public class AuthService implements IAuthService {
 
     @Override
     public User authenticate(UserDto userDto) throws UnathorizedException {
-        Optional<User> user = userRepository.findByUsername(userDto.getUsername());
-        if (user.isPresent()) {
-            if (pwEncoder.matches(userDto.getPassword(), user.get().getHashedPassword())) {
-                LOGGER.debug("User {} authenticated", userDto.getUsername());
-                return user.get();
-            } else {
-                LOGGER.debug("User {} tried to authenticate with wrong password", userDto.getUsername());
-                throw new UnathorizedException(String.format("User %s authenticated with wrong password", userDto.getUsername()));
-            }
-        } else {
-            LOGGER.debug("Non-existing user {} tried to authenticate", userDto.getUsername());
-            throw new UnathorizedException(String.format("User %s not found", userDto.getUsername()));
-        }
+        User user = userRepository.findByUsername(userDto.getUsername()).orElseThrow(UnathorizedException::new);
 
+        if (pwEncoder.matches(userDto.getPassword(), user.getHashedPassword())) {
+            LOGGER.debug("User {} authenticated", userDto.getUsername());
+            return user;
+        } else {
+            LOGGER.debug("User {} tried to authenticate with wrong password", userDto.getUsername());
+            throw new UnathorizedException(String.format("User %s authenticated with wrong password", userDto.getUsername()));
+        }
     }
 
     @Override

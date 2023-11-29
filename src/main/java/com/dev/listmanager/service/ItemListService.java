@@ -8,7 +8,10 @@ import com.dev.listmanager.entity.Tag;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
-import com.dev.listmanager.repository.*;
+import com.dev.listmanager.repository.ItemListRepository;
+import com.dev.listmanager.repository.ItemRepository;
+import com.dev.listmanager.repository.TagRepository;
+import com.dev.listmanager.repository.UserRepository;
 import com.dev.listmanager.service.interfaces.IItemListService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,7 +34,7 @@ public class ItemListService implements IItemListService {
     private final BasicJsonParser parser = new BasicJsonParser();
 
     @Autowired
-    public ItemListService(ItemListRepository repository, ItemRepository itemRepository, TagRepository tagRepository, UserRepository userRepository, UserCookieRepository userCookieRepository) {
+    public ItemListService(ItemListRepository repository, ItemRepository itemRepository, TagRepository tagRepository, UserRepository userRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.tagRepository = tagRepository;
@@ -39,9 +42,11 @@ public class ItemListService implements IItemListService {
     }
 
     public Item addItem(String uuid, ItemDto itemDto) {
-        List<Tag> tags = itemDto.getTagIds().stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(() -> new RuntimeException("Tag not found with ID: " + tagId))).collect(Collectors.toList());
+        List<Tag> tags = itemDto.getTagIds().stream()
+                .map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(IllegalArgumentException::new))
+                .collect(Collectors.toList());
 
-        ItemList list = repository.findById(UUID.fromString(uuid)).orElseThrow(() -> new RuntimeException("ItemList not found with ID: " + uuid));
+        ItemList list = repository.findById(UUID.fromString(uuid)).orElseThrow(IllegalArgumentException::new);
 
         Item item = new Item(list, itemDto.getName(), tags);
         list.addItem(item);
@@ -73,7 +78,9 @@ public class ItemListService implements IItemListService {
             for (int i = 0; i < tagsArray.length(); i++) {
                 tagIds.add(tagsArray.getString(i));
             }
-            List<Tag> tags = tagIds.stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(RuntimeException::new)).collect(Collectors.toList());
+            List<Tag> tags = tagIds.stream()
+                    .map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(RuntimeException::new))
+                    .collect(Collectors.toList());
 
             item.setTags(tags);
         }
@@ -169,21 +176,21 @@ public class ItemListService implements IItemListService {
     }
 
     @Override
-    public ItemList createList(String cookie, ItemListDto itemListDto) throws UnathorizedException {
+    public ItemList createList(String cookie, ItemListDto itemListDto) throws UnathorizedException, NotFoundException {
         String username = cookie.split("&")[0];
         if (username.isEmpty()) {
             throw new UnathorizedException();
         }
-        var owner = userRepository.findByUsername(username).get();
+        var owner = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
         var itemList = new ItemList(itemListDto.getName(), owner);
         LOGGER.debug("List {} created, owner {}", itemList.getId(), owner.getId());
         return repository.save(itemList);
     }
 
     @Override
-    public ItemList updateList(String id, String attributes) {
+    public ItemList updateList(String id, String attributes) throws NotFoundException {
         Optional<ItemList> optionalItemList = repository.findById(UUID.fromString(id));
-        ItemList list = optionalItemList.orElseThrow(IllegalArgumentException::new);
+        ItemList list = optionalItemList.orElseThrow(NotFoundException::new);
 
         Map<String, Object> attributesMap = parser.parseMap(attributes);
         attributesMap.forEach((key, value) -> {

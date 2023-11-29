@@ -40,6 +40,14 @@ public class AuthController {
         return getUserResponseEntity(user);
     }
 
+    private ResponseEntity<User> getUserResponseEntity(User user) {
+        ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, authService.createToken(user))
+                .httpOnly(false).sameSite("None").secure(true).maxAge(1000 * 60 * 60 * 24).path("/").build();
+
+        authService.addCookie(cookie.getValue());
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(user);
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<User> signup(@RequestBody @Valid UserDto userDto) {
         User user = userService.createUser(userDto);
@@ -49,22 +57,17 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         SecurityContextHolder.clearContext();
-        Optional<Cookie> authCookie = Stream.of(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0])).filter(cookie -> CookieAuthFilter.COOKIE_NAME.equals(cookie.getName())).findFirst();
+        
+        Optional<Cookie> authCookie = Stream.of(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                .filter(cookie -> CookieAuthFilter.COOKIE_NAME.equals(cookie.getName())).findFirst();
         authCookie.ifPresent(cookie -> {
             String value = cookie.getValue();
             authService.deleteCookie(value);
         });
 
-        ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, "").httpOnly(false).sameSite("None").secure(true).maxAge(0).path("/").build();
+        ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, "").httpOnly(false).sameSite("None")
+                .secure(true).maxAge(0).path("/").build();
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }
-
-    private ResponseEntity<User> getUserResponseEntity(User user) {
-        ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, authService.createToken(user)).httpOnly(false).sameSite("None").secure(true).maxAge(1000 * 60 * 60 * 24).path("/").build();
-
-        authService.addCookie(cookie.getValue());
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(user);
-    }
-
 }

@@ -22,6 +22,7 @@ public class AccessFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         RequestWrapper requestCopy = new RequestWrapper(request);
+        
         if (HttpMethod.GET.matches(requestCopy.getMethod())) {
             String servletPath = requestCopy.getServletPath();
             if (servletPath.startsWith("/lists")) {
@@ -37,7 +38,7 @@ public class AccessFilter extends OncePerRequestFilter {
 
         if (HttpMethod.PUT.matches(requestCopy.getMethod()) || HttpMethod.DELETE.matches(request.getMethod())) {
             String servletPath = requestCopy.getServletPath();
-            System.out.println(servletPath);
+
             if (servletPath.startsWith("/lists")) {
                 if (servletPath.startsWith("/lists/item")) {
                     if (!accessProvider.canModifyItem(requestCopy)) {

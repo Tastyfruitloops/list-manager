@@ -40,15 +40,13 @@ public class ListController {
 
     @PostMapping("/")
     public ResponseEntity<ItemList> createList(@CookieValue("token") String cookie, @RequestBody ItemListDto itemListDto) throws UnathorizedException, NotFoundException {
-        itemListService.createList(cookie, itemListDto);
-        ItemList list = itemListService.getListByName(itemListDto.getName());
+        ItemList list = itemListService.createList(cookie, itemListDto);
         return ResponseEntity.ok().body(list);
     }
 
     @PostMapping("/{id}/item")
     public ResponseEntity<Item> createItem(@PathVariable String id, @RequestBody ItemDto itemDto) throws NotFoundException {
-        itemListService.addItem(id, itemDto);
-        Item item = itemListService.getItemByName(itemDto.getName());
+        Item item = itemListService.addItem(id, itemDto);
         return ResponseEntity.ok().body(item);
     }
 
@@ -61,8 +59,7 @@ public class ListController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ItemList> updateList(@PathVariable String id, @RequestBody String attributes) throws NotFoundException {
-        itemListService.updateList(id, attributes);
-        ItemList list = itemListService.getListById(id);
+        ItemList list = itemListService.updateList(id, attributes);
         return ResponseEntity.ok().body(list);
     }
 

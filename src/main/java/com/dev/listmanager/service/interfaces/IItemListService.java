@@ -39,9 +39,9 @@ public interface IItemListService {
 
     List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException;
 
-    ItemList createList(String cookie, ItemListDto list) throws UnathorizedException;
+    ItemList createList(String cookie, ItemListDto list) throws UnathorizedException, NotFoundException;
 
-    ItemList updateList(String id, String attributes);
+    ItemList updateList(String id, String attributes) throws NotFoundException;
 
     void deleteList(String id) throws NotFoundException;
 }
