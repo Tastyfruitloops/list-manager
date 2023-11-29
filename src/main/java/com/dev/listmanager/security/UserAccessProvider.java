@@ -61,9 +61,6 @@ public class UserAccessProvider {
         try {
             Item item = listService.getItemById(uuid);
             ItemList list = item.getList();
-            if (list.isArchived()) {
-                return false;
-            }
 
             String username = getUsernameFromCookie(getCookieValue(request));
 
@@ -80,9 +77,6 @@ public class UserAccessProvider {
         try {
             Tag tag = listService.getTagById(uuid);
             ItemList list = tag.getList();
-            if (list.isArchived()) {
-                return false;
-            }
 
             String username = getUsernameFromCookie(getCookieValue(request));
 
