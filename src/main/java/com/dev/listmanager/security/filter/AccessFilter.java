@@ -36,7 +36,7 @@ public class AccessFilter extends OncePerRequestFilter {
             }
         }
 
-        if (HttpMethod.PUT.matches(requestCopy.getMethod()) || HttpMethod.DELETE.matches(request.getMethod())) {
+        if (HttpMethod.PUT.matches(requestCopy.getMethod()) || HttpMethod.DELETE.matches(request.getMethod()) || HttpMethod.POST.matches((request.getMethod()))) {
             String servletPath = requestCopy.getServletPath();
 
             if (servletPath.startsWith("/lists")) {

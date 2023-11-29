@@ -53,7 +53,7 @@ public class ListController {
         return ResponseEntity.ok().body(list);
     }
 
-    @PostMapping("/{id}/item")
+    @PostMapping("/item/{id}")
     @Operation(summary = "Create a new item in a list")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Item created successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
     public ResponseEntity<Item> createItem(@PathVariable String id, @RequestBody ItemDto itemDto) throws NotFoundException {
@@ -61,7 +61,7 @@ public class ListController {
         return ResponseEntity.ok().body(item);
     }
 
-    @PostMapping("/{id}/tag")
+    @PostMapping("/tag/{id}")
     @Operation(summary = "Add a tag to a list by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Tag added successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
     public ResponseEntity<ItemList> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
