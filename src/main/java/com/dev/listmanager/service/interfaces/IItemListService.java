@@ -44,4 +44,8 @@ public interface IItemListService {
     ItemList updateList(String id, String attributes) throws NotFoundException;
 
     void deleteList(String id) throws NotFoundException;
+
+    void archiveList(String username, String listId) throws NotFoundException;
+
+    void unarchiveList(String username, String listId) throws NotFoundException;
 }
