@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -28,6 +29,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<ItemList> lists = new ArrayList<>();
 
     public User() {
@@ -51,12 +53,18 @@ public class User {
         return password;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public List<ItemList> getLists() {
         return lists;
     }
 
     public void setLists(List<ItemList> lists) {
         this.lists = lists;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public List<ItemList> getPublicLists() {
+        return lists.stream().filter(ItemList::isPublic).collect(Collectors.toList());
     }
 
     public void setPassword(String password) {

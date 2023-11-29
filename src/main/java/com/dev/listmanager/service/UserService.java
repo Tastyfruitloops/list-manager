@@ -92,4 +92,8 @@ public class UserService implements IUserService {
         LOGGER.debug("User {} deleted", user.getId());
         repository.delete(user);
     }
+
+    public Optional<User> getUserByUsernameOptional(String username) {
+        return repository.findByUsername(username);
+    }
 }
