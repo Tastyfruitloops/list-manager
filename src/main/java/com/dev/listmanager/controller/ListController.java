@@ -70,24 +70,6 @@ public class ListController {
         return ResponseEntity.ok().body(list);
     }
 
-    @PostMapping("/{id}/archive")
-    @Operation(summary = "Archive list by ID")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "List archived successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<String> archiveList(@PathVariable String id, @CookieValue String cookie) throws NotFoundException {
-        String username = cookie.split("&")[0];
-        itemListService.archiveList(username, id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{id}/unarchive")
-    @Operation(summary = "Unarchive list by ID")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "List unarchived successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<String> unarchiveList(@PathVariable String id, @CookieValue String cookie) throws NotFoundException {
-        String username = cookie.split("&")[0];
-        itemListService.unarchiveList(username, id);
-        return ResponseEntity.ok().build();
-    }
-
     @PutMapping("/{id}")
     @Operation(summary = "Update a list by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "List updated successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })

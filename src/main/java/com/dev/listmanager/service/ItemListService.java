@@ -185,19 +185,15 @@ public class ItemListService implements IItemListService {
 
     @Override
     public ItemList updateList(String id, String attributes) throws NotFoundException {
-
         Optional<ItemList> optionalItemList = repository.findById(UUID.fromString(id));
         ItemList list = optionalItemList.orElseThrow(NotFoundException::new);
-
-        if (list.isArchived()) {
-            throw new IllegalArgumentException();
-        }
 
         Map<String, Object> attributesMap = parser.parseMap(attributes);
         attributesMap.forEach((key, value) -> {
             switch (key) {
                 case "name" -> list.setName((String) value);
                 case "public" -> list.setPublic(Boolean.parseBoolean((String) value));
+                case "archived" -> list.setArchived(Boolean.parseBoolean((String) value));
             }
         });
         LOGGER.debug("List {} updated", list.getId());
@@ -210,19 +206,4 @@ public class ItemListService implements IItemListService {
         LOGGER.debug("List {} deleted", id);
         repository.delete(itemList);
     }
-
-    @Override
-    public void archiveList(String username, String listId) throws NotFoundException {
-        var itemList = repository.findById(UUID.fromString(listId)).orElseThrow(NotFoundException::new);
-        itemList.setArchived(true);
-        repository.save(itemList);
-    }
-
-    @Override
-    public void unarchiveList(String username, String listId) throws NotFoundException {
-        var itemList = repository.findById(UUID.fromString(listId)).orElseThrow(NotFoundException::new);
-        itemList.setArchived(false);
-        repository.save(itemList);
-    }
-
 }
