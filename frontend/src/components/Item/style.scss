@@ -1,0 +1,108 @@
+/* stylelint-disable no-descending-specificity */
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    min-width: 320px;
+    max-width: 320px;
+    padding: 8px 16px;
+
+    background: #E8E9E3;
+    border: none;
+    border-radius: 8px;
+
+    section {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+
+        width: 100%;
+
+        .tags {
+            cursor: pointer;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+
+            padding: 4px;
+
+            background: none;
+            border: none;
+            border-radius: 4px;
+
+            .badge {
+                cursor: pointer;
+
+                display: flex;
+
+                max-width: 120px;
+
+                color: #001F23;
+
+                background: #BCEBF1;
+
+                transition: 100ms;
+
+                .tag {
+                    overflow: hidden;
+                    display: block;
+
+                    max-width: 120px;
+
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+
+                }
+
+                &.ghost {
+                    background: none;
+                    border: #8C9388 1px dashed;
+
+                    .material-symbols-outlined {
+                        font-size: 16px;
+                        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+                    }
+                }
+            }
+
+            &:hover {
+                background: #E2E3DD;
+            }
+
+        }
+
+        input {
+            width: 100%;
+
+            font-size: 14px;
+            font-weight: 400;
+            font-style: normal;
+            line-height: normal;
+            color: #1A1C19;
+
+            background: none;
+            border: none;
+            outline: none;
+        }
+    }
+
+    &>.material-symbols-outlined {
+        cursor: pointer;
+
+        font-size: 20px;
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        color: #BA1A1A;
+
+        opacity: 1;
+
+        transition: 100ms;
+
+        &:hover {
+            opacity: 0.6;
+        }
+    }
+}
