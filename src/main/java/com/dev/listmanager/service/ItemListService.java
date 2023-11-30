@@ -6,6 +6,7 @@ import com.dev.listmanager.entity.Item;
 import com.dev.listmanager.entity.ItemList;
 import com.dev.listmanager.entity.Tag;
 import com.dev.listmanager.entity.User;
+import com.dev.listmanager.exception.ListArchivedException;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.repository.ItemListRepository;
@@ -41,10 +42,16 @@ public class ItemListService implements IItemListService {
         this.userRepository = userRepository;
     }
 
-    public Item addItem(String uuid, ItemDto itemDto) {
-        List<Tag> tags = itemDto.getTagIds().stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(IllegalArgumentException::new)).collect(Collectors.toList());
+    public Item addItem(String uuid, ItemDto itemDto) throws ListArchivedException {
+        List<Tag> tags = itemDto.getTagIds().stream()
+                .map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(IllegalArgumentException::new))
+                .collect(Collectors.toList());
 
         ItemList list = repository.findById(UUID.fromString(uuid)).orElseThrow(IllegalArgumentException::new);
+
+        if (list.isArchived()) {
+            throw new ListArchivedException();
+        }
 
         Item item = new Item(list, itemDto.getName(), tags);
         list.addItem(item);
@@ -53,17 +60,27 @@ public class ItemListService implements IItemListService {
         return itemRepository.save(item);
     }
 
-    public void deleteItem(String uuid) throws NotFoundException {
+    public void deleteItem(String uuid) throws NotFoundException, ListArchivedException {
         Item item = itemRepository.findById(UUID.fromString(uuid)).orElseThrow(NotFoundException::new);
         ItemList list = item.getList();
+
+        if (list.isArchived()) {
+            throw new ListArchivedException();
+        }
+
         list.removeItem(item);
         LOGGER.debug("Item {} removed from list {}", item.getId(), list.getId());
         itemRepository.delete(item);
     }
 
-    public Item updateItem(String uuid, String attributes) {
+    public Item updateItem(String uuid, String attributes) throws ListArchivedException, NotFoundException {
         Optional<Item> optionalItem = itemRepository.findById(UUID.fromString(uuid));
-        Item item = optionalItem.orElseThrow(RuntimeException::new);
+        Item item = optionalItem.orElseThrow(NotFoundException::new);
+
+        ItemList list = item.getList();
+        if (list.isArchived()) {
+            throw new ListArchivedException();
+        }
 
         JSONObject jsonObject = new JSONObject(attributes);
         if (jsonObject.has("name")) {
@@ -76,7 +93,8 @@ public class ItemListService implements IItemListService {
             for (int i = 0; i < tagsArray.length(); i++) {
                 tagIds.add(tagsArray.getString(i));
             }
-            List<Tag> tags = tagIds.stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId)).orElseThrow(RuntimeException::new)).collect(Collectors.toList());
+            List<Tag> tags = tagIds.stream().map(tagId -> tagRepository.findById(UUID.fromString(tagId))
+                    .orElseThrow(NoSuchElementException::new)).collect(Collectors.toList());
 
             item.setTags(tags);
         }
@@ -84,9 +102,13 @@ public class ItemListService implements IItemListService {
         return itemRepository.save(item);
     }
 
-    public Tag addTag(String uuid, String name) throws NotFoundException {
+    public Tag addTag(String uuid, String name) throws NotFoundException, ListArchivedException {
         Optional<ItemList> optionalItemList = repository.findById(UUID.fromString(uuid));
         ItemList list = optionalItemList.orElseThrow(NotFoundException::new);
+
+        if (list.isArchived()) {
+            throw new ListArchivedException();
+        }
 
         Tag tag = new Tag(name, list);
         list.addTag(tag);
@@ -94,17 +116,27 @@ public class ItemListService implements IItemListService {
         return tagRepository.save(tag);
     }
 
-    public void deleteTag(String uuid) throws NotFoundException {
+    public void deleteTag(String uuid) throws NotFoundException, ListArchivedException {
         Tag tag = tagRepository.findById(UUID.fromString(uuid)).orElseThrow(NotFoundException::new);
         ItemList list = tag.getList();
+
+        if (list.isArchived()) {
+            throw new ListArchivedException();
+        }
+
         list.removeTag(tag);
         LOGGER.debug("Tag {} removed from list {}", tag.getId(), list.getId());
         tagRepository.delete(tag);
     }
 
-    public Tag updateTag(String uuid, String name) throws NotFoundException {
+    public Tag updateTag(String uuid, String name) throws NotFoundException, ListArchivedException {
         Optional<Tag> optionalTag = tagRepository.findById(UUID.fromString(uuid));
         Tag tag = optionalTag.orElseThrow(NotFoundException::new);
+
+        ItemList list = tag.getList();
+        if (list.isArchived()) {
+            throw new ListArchivedException();
+        }
 
         tag.setName(name);
         LOGGER.debug("Tag {} updated", tag.getId());

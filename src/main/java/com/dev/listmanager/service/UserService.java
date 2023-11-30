@@ -54,7 +54,8 @@ public class UserService implements IUserService {
         User user = optionalUser.orElseThrow(NotFoundException::new);
 
         if (!user.getUsername().equals(requesterUsername)) {
-            user.setLists(user.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived()).collect(Collectors.toList()));
+            user.setLists(user.getLists().stream().filter(itemList -> itemList.isPublic() && !itemList.isArchived())
+                    .collect(Collectors.toList()));
         }
         return user;
     }
@@ -106,32 +107,38 @@ public class UserService implements IUserService {
     public void createTemplateListForUser(User user) {
         ItemList sampleList = new ItemList("My favourite movies", user);
         itemListRepository.save(sampleList);
-        List<Tag> tagList = new ArrayList<>();
-        tagList.add(new Tag("Drama", sampleList));
-        tagList.add(new Tag("Action", sampleList));
-        tagList.add(new Tag("Crime", sampleList));
-        tagList.add(new Tag("Sci-Fi", sampleList));
-        tagList.add(new Tag("Comedy", sampleList));
-        tagList.add(new Tag("Romance", sampleList));
-        tagList.add(new Tag("Thriller", sampleList));
-        tagList.forEach(tag -> {
+
+        ArrayList<String> sampleTagNames = new ArrayList<>(Arrays.asList("Drama",
+                "Action",
+                "Crime",
+                "Sci-Fi",
+                "Comedy",
+                "Romance",
+                "Thriller"
+        ));
+        ArrayList<Tag> tagList = new ArrayList<>();
+        sampleTagNames.forEach(tagName -> {
+            Tag tag = new Tag(tagName, sampleList);
+            tagList.add(tag);
             tagRepository.save(tag);
             sampleList.addTag(tag);
         });
-        itemListRepository.save(sampleList);
-        List<Item> sampleItems = new ArrayList<>();
-        sampleItems.add(new Item(sampleList, "The Shawshank Redemption", new ArrayList<>(List.of(tagList.get(0)))));
-        sampleItems.add(new Item(sampleList, "The Dark Knight", new ArrayList<>(List.of(tagList.get(0), tagList.get(1), tagList.get(2)))));
-        sampleItems.add(new Item(sampleList, "Inception", new ArrayList<>(List.of(tagList.get(3), tagList.get(1), tagList.get(6)))));
-        sampleItems.add(new Item(sampleList, "Forrest Gump", new ArrayList<>(List.of(tagList.get(4), tagList.get(0), tagList.get(5)))));
-        sampleItems.add(new Item(sampleList, "The Matrix", new ArrayList<>(List.of(tagList.get(3), tagList.get(1)))));
+
+        List<Item> sampleItems = Arrays.asList(new Item(sampleList,
+                        "The Shawshank Redemption",
+                        List.of(tagList.get(0))
+                ),
+                new Item(sampleList, "The Dark Knight", List.of(tagList.get(0), tagList.get(1), tagList.get(2))),
+                new Item(sampleList, "Inception", List.of(tagList.get(3), tagList.get(1), tagList.get(6))),
+                new Item(sampleList, "Forrest Gump", List.of(tagList.get(4), tagList.get(0), tagList.get(5))),
+                new Item(sampleList, "The Matrix", List.of(tagList.get(3), tagList.get(1)))
+        );
         sampleItems.forEach(item -> {
             itemRepository.save(item);
             sampleList.addItem(item);
         });
-        user.addList(sampleList);
-        repository.save(user);
 
+        user.addList(sampleList);
     }
 
     public Optional<User> getUserByUsernameOptional(String username) {

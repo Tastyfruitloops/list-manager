@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,24 +43,26 @@ public class AuthController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Logged in successfully."), @ApiResponse(responseCode = "404", description = "User not found"), })
     public ResponseEntity<User> login(@RequestBody UserDto userDto) throws NotFoundException {
         User user = userService.getUserByUsername(userDto.getUsername());
-        return getUserResponseEntity(user);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, createCookie(user).toString()).body(user);
     }
 
-    private ResponseEntity<User> getUserResponseEntity(User user) {
+    private ResponseCookie createCookie(User user) {
         ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, authService.createToken(user))
                 .httpOnly(false).sameSite("None").secure(true).maxAge(1000 * 60 * 60 * 24).path("/").build();
 
         authService.addCookie(cookie.getValue());
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(user);
+        return cookie;
     }
 
     @PostMapping("/signup")
     @Operation(summary = "Create a new user")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "User created successfully."), @ApiResponse(responseCode = "400", description = "Bad request"), @ApiResponse(responseCode = "409", description = "User already exists") })
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "User created successfully."), @ApiResponse(responseCode = "400", description = "Bad request"), @ApiResponse(responseCode = "409", description = "User already exists") })
     public ResponseEntity<User> signup(@RequestBody @Valid UserDto userDto) {
         User user = userService.createUser(userDto);
         userService.createTemplateListForUser(user);
-        return getUserResponseEntity(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.SET_COOKIE, createCookie(user).toString())
+                .body(user);
     }
 
     @PostMapping("/logout")

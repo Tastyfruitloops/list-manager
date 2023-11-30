@@ -3,6 +3,7 @@ package com.dev.listmanager.security;
 import com.dev.listmanager.dto.UserDto;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.entity.UserCookie;
+import com.dev.listmanager.exception.InvalidCookieException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.service.AuthService;
 import jakarta.annotation.PostConstruct;
@@ -37,8 +38,9 @@ public class UserAuthProvider {
         Optional<UserCookie> optionalCookie = authService.findCookie(cookie);
         if (optionalCookie.isPresent()) {
             return new PreAuthenticatedAuthenticationToken(cookie, null, Collections.emptyList());
-        } else
-            throw new RuntimeException("Invalid cookie");
+        } else {
+            throw new InvalidCookieException();
+        }
     }
 
     public Authentication validateCredentials(UserDto userDto) throws UnathorizedException {

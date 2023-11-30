@@ -6,6 +6,7 @@ import com.dev.listmanager.dto.TagDto;
 import com.dev.listmanager.entity.Item;
 import com.dev.listmanager.entity.ItemList;
 import com.dev.listmanager.entity.Tag;
+import com.dev.listmanager.exception.ListArchivedException;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.service.interfaces.IItemListService;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -47,27 +49,27 @@ public class ListController {
 
     @PostMapping("/")
     @Operation(summary = "Create a new list")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "List created successfully."), @ApiResponse(responseCode = "401", description = "Unauthorized"), @ApiResponse(responseCode = "404", description = "User not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "List created successfully."), @ApiResponse(responseCode = "401", description = "Unauthorized"), @ApiResponse(responseCode = "404", description = "User not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
     public ResponseEntity<ItemList> createList(@CookieValue("token") String cookie, @RequestBody ItemListDto itemListDto) throws UnathorizedException, NotFoundException {
         ItemList list = itemListService.createList(cookie, itemListDto);
-        return ResponseEntity.ok().body(list);
+        return ResponseEntity.status(HttpStatus.CREATED).body(list);
     }
 
     @PostMapping("/{id}/item")
     @Operation(summary = "Create a new item in a list")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Item created successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<Item> createItem(@PathVariable String id, @RequestBody ItemDto itemDto) throws NotFoundException {
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Item created successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
+    public ResponseEntity<Item> createItem(@PathVariable String id, @RequestBody ItemDto itemDto) throws ListArchivedException {
         Item item = itemListService.addItem(id, itemDto);
-        return ResponseEntity.ok().body(item);
+        return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
 
     @PostMapping("/{id}/tag")
     @Operation(summary = "Add a tag to a list by ID")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Tag added successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<ItemList> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Tag added successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
+    public ResponseEntity<ItemList> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException, ListArchivedException {
         itemListService.addTag(id, tagDto.getName());
         ItemList list = itemListService.getListById(id);
-        return ResponseEntity.ok().body(list);
+        return ResponseEntity.status(HttpStatus.CREATED).body(list);
     }
 
     @PutMapping("/{id}")
@@ -81,7 +83,7 @@ public class ListController {
     @PutMapping("/item/{id}")
     @Operation(summary = "Update an item by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Item updated successfully."), @ApiResponse(responseCode = "404", description = "Item not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<Item> updateItem(@PathVariable String id, @RequestBody String attributes) throws NotFoundException {
+    public ResponseEntity<Item> updateItem(@PathVariable String id, @RequestBody String attributes) throws NotFoundException, ListArchivedException {
         itemListService.updateItem(id, attributes);
         Item item = itemListService.getItemById(id);
         return ResponseEntity.ok().body(item);
@@ -90,7 +92,7 @@ public class ListController {
     @PutMapping("/tag/{id}")
     @Operation(summary = "Update a tag by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Tag updated successfully."), @ApiResponse(responseCode = "404", description = "Tag not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<Tag> updateTag(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException {
+    public ResponseEntity<Tag> updateTag(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException, ListArchivedException {
         itemListService.updateTag(id, tagDto.getName());
         Tag tag = itemListService.getTagById(id);
         return ResponseEntity.ok().body(tag);
@@ -98,25 +100,25 @@ public class ListController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a list by ID")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "List deleted successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "List deleted successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
     public ResponseEntity<String> deleteList(@PathVariable String id) throws NotFoundException {
         itemListService.deleteList(id);
-        return ResponseEntity.ok().body("List was successfully deleted!");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/item/{id}")
     @Operation(summary = "Delete an item by ID")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Item deleted successfully."), @ApiResponse(responseCode = "404", description = "Item not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<String> deleteItem(@PathVariable String id) throws NotFoundException {
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Item deleted successfully."), @ApiResponse(responseCode = "404", description = "Item not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
+    public ResponseEntity<String> deleteItem(@PathVariable String id) throws NotFoundException, ListArchivedException {
         itemListService.deleteItem(id);
-        return ResponseEntity.ok().body("Item was successfully deleted!");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/tag/{id}")
     @Operation(summary = "Delete a tag by ID")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Tag deleted successfully."), @ApiResponse(responseCode = "404", description = "Tag not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<String> deleteTag(@PathVariable String id) throws NotFoundException {
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Tag deleted successfully."), @ApiResponse(responseCode = "404", description = "Tag not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
+    public ResponseEntity<String> deleteTag(@PathVariable String id) throws NotFoundException, ListArchivedException {
         itemListService.deleteTag(id);
-        return ResponseEntity.ok().body("Tag was successfully deleted!");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

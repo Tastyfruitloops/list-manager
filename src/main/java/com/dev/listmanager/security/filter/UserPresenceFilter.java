@@ -1,6 +1,7 @@
 package com.dev.listmanager.security.filter;
 
 import com.dev.listmanager.dto.UserDto;
+import com.dev.listmanager.exception.InternalAuthenticationException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.security.UserAuthProvider;
 import com.dev.listmanager.util.RequestWrapper;
@@ -37,7 +38,8 @@ public class UserPresenceFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authProvider.validateCredentials(userLoginDTO));
             } catch (RuntimeException e) {
                 SecurityContextHolder.clearContext();
-                throw e;
+                LOGGER.error("User {} not authenticated", userLoginDTO.getUsername());
+                throw new InternalAuthenticationException(e);
             } catch (UnathorizedException e) {
                 SecurityContextHolder.clearContext();
                 LOGGER.error("User {} not authenticated", userLoginDTO.getUsername());

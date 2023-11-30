@@ -3,6 +3,7 @@ package com.dev.listmanager.service;
 import com.dev.listmanager.dto.UserDto;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.entity.UserCookie;
+import com.dev.listmanager.exception.InternalAuthenticationException;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.repository.UserCookieRepository;
@@ -69,7 +70,10 @@ public class AuthService implements IAuthService {
             return user;
         } else {
             LOGGER.debug("User {} tried to authenticate with wrong password", userDto.getUsername());
-            throw new UnathorizedException(String.format("User %s authenticated with wrong password", userDto.getUsername()));
+            throw new UnathorizedException(String.format(
+                    "User %s authenticated with wrong password",
+                    userDto.getUsername()
+            ));
         }
     }
 
@@ -94,7 +98,7 @@ public class AuthService implements IAuthService {
             byte[] hmacBytes = mac.doFinal(valueBytes);
             return Base64.getEncoder().encodeToString(hmacBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+            throw new InternalAuthenticationException(e);
         }
     }
 }
