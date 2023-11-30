@@ -34,7 +34,7 @@ public class UserAuthProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public Authentication validateCookie(String cookie) {
+    public Authentication validateCookie(String cookie) throws InvalidCookieException {
         Optional<UserCookie> optionalCookie = authService.findCookie(cookie);
         if (optionalCookie.isPresent()) {
             return new PreAuthenticatedAuthenticationToken(cookie, null, Collections.emptyList());

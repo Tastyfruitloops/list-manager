@@ -66,10 +66,9 @@ public class ListController {
     @PostMapping("/{id}/tag")
     @Operation(summary = "Add a tag to a list by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Tag added successfully."), @ApiResponse(responseCode = "404", description = "List not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
-    public ResponseEntity<ItemList> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException, ListArchivedException {
-        itemListService.addTag(id, tagDto.getName());
-        ItemList list = itemListService.getListById(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(list);
+    public ResponseEntity<Tag> tagList(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException, ListArchivedException {
+        Tag tag = itemListService.addTag(id, tagDto.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(tag);
     }
 
     @PutMapping("/{id}")
@@ -84,8 +83,7 @@ public class ListController {
     @Operation(summary = "Update an item by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Item updated successfully."), @ApiResponse(responseCode = "404", description = "Item not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
     public ResponseEntity<Item> updateItem(@PathVariable String id, @RequestBody String attributes) throws NotFoundException, ListArchivedException {
-        itemListService.updateItem(id, attributes);
-        Item item = itemListService.getItemById(id);
+        Item item = itemListService.updateItem(id, attributes);
         return ResponseEntity.ok().body(item);
     }
 
@@ -93,8 +91,7 @@ public class ListController {
     @Operation(summary = "Update a tag by ID")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Tag updated successfully."), @ApiResponse(responseCode = "404", description = "Tag not found"), @ApiResponse(responseCode = "500", description = "Internal Server Error") })
     public ResponseEntity<Tag> updateTag(@PathVariable String id, @RequestBody TagDto tagDto) throws NotFoundException, ListArchivedException {
-        itemListService.updateTag(id, tagDto.getName());
-        Tag tag = itemListService.getTagById(id);
+        Tag tag = itemListService.updateTag(id, tagDto.getName());
         return ResponseEntity.ok().body(tag);
     }
 
