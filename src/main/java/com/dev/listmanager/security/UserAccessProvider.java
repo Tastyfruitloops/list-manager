@@ -1,8 +1,11 @@
 package com.dev.listmanager.security;
 
+import com.dev.listmanager.entity.Item;
 import com.dev.listmanager.entity.ItemList;
+import com.dev.listmanager.entity.Tag;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.service.ItemListService;
+import com.dev.listmanager.service.UserService;
 import com.dev.listmanager.util.RequestWrapper;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
@@ -14,25 +17,21 @@ import java.util.Optional;
 @Component
 public class UserAccessProvider {
     private final ItemListService listService;
+    private final UserService userService;
 
-    public UserAccessProvider(ItemListService listService) {
+    public UserAccessProvider(ItemListService listService, UserService userService) {
         this.listService = listService;
+        this.userService = userService;
     }
 
-    public boolean canAccessList(RequestWrapper request) {
-        String path = request.getServletPath();
-        String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
-
+    public boolean canViewLists(RequestWrapper request) {
         try {
-            return hasAccess(uuid, getUsernameFromCookie(getCookieValue(request)));
+            String username = getUsernameFromCookie(getCookieValue(request));
+            var user = userService.getUserByUsernameOptional(username);
+            return user.isPresent();
         } catch (NotFoundException e) {
             return false;
         }
-    }
-
-    private boolean hasAccess(String uuid, String username) throws NotFoundException {
-        ItemList list = listService.getListById(uuid);
-        return list.getOwner().getUsername().equals(username) || list.isPublic();
     }
 
     private String getUsernameFromCookie(String cookie) {
@@ -53,6 +52,54 @@ public class UserAccessProvider {
         }
 
         return value.substring(0, value.length() - 1);
+    }
+
+    public boolean canModifyItem(RequestWrapper request) {
+        String path = request.getServletPath();
+        String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
+
+        try {
+            Item item = listService.getItemById(uuid);
+            ItemList list = item.getList();
+
+            String username = getUsernameFromCookie(getCookieValue(request));
+
+            return list.getOwner().getUsername().equals(username);
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    public boolean canModifyTag(RequestWrapper request) {
+        String path = request.getServletPath();
+        String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
+
+        try {
+            Tag tag = listService.getTagById(uuid);
+            ItemList list = tag.getList();
+
+            String username = getUsernameFromCookie(getCookieValue(request));
+
+            return list.getOwner().getUsername().equals(username);
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    public boolean canAccessList(RequestWrapper request) {
+        String path = request.getServletPath();
+        String uuid = path.substring(path.lastIndexOf("/") + 1).replace("/", "");
+
+        try {
+            return hasAccess(uuid, getUsernameFromCookie(getCookieValue(request)));
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean hasAccess(String uuid, String username) throws NotFoundException {
+        ItemList list = listService.getListById(uuid);
+        return list.getOwner().getUsername().equals(username) || list.isPublic();
     }
 
     public boolean canModifyList(RequestWrapper request) {

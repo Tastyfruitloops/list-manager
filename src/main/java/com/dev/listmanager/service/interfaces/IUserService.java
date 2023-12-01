@@ -9,7 +9,7 @@ import java.util.List;
 public interface IUserService {
     List<User> getAllUsers();
 
-    User getUserById(String id) throws NotFoundException;
+    User getUserById(String requesterUsername, String id) throws NotFoundException;
 
     User getUserByUsername(String username) throws NotFoundException;
 
@@ -18,4 +18,6 @@ public interface IUserService {
     User updateUser(String id, String attributes) throws NotFoundException;
 
     void deleteUser(String id) throws NotFoundException;
+
+    void createTemplateListForUser(User user);
 }

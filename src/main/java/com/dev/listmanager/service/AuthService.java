@@ -3,10 +3,14 @@ package com.dev.listmanager.service;
 import com.dev.listmanager.dto.UserDto;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.entity.UserCookie;
+import com.dev.listmanager.exception.InternalAuthenticationException;
 import com.dev.listmanager.exception.NotFoundException;
+import com.dev.listmanager.exception.UnathorizedException;
 import com.dev.listmanager.repository.UserCookieRepository;
 import com.dev.listmanager.repository.UserRepository;
 import com.dev.listmanager.service.interfaces.IAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,12 +28,13 @@ import java.util.Optional;
 
 @Service
 public class AuthService implements IAuthService {
-    @Value("${auth.cookie.hmac-key:secret-key}")
-    private String secretKey;
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
+    private static final PasswordEncoder pwEncoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
     private final UserCookieRepository repository;
-    private static final PasswordEncoder pwEncoder = new BCryptPasswordEncoder();
+    @Value("${auth.cookie.hmac-key:secret-key}")
+    private String secretKey;
 
     @Autowired
     public AuthService(UserRepository userRepository, UserCookieRepository repository) {
@@ -57,13 +62,18 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public User authenticate(UserDto userDto) throws NotFoundException {
-        User user = userRepository.findByUsername(userDto.getUsername()).orElseThrow(NotFoundException::new);
+    public User authenticate(UserDto userDto) throws UnathorizedException {
+        User user = userRepository.findByUsername(userDto.getUsername()).orElseThrow(UnathorizedException::new);
 
         if (pwEncoder.matches(userDto.getPassword(), user.getHashedPassword())) {
+            LOGGER.debug("User {} authenticated", userDto.getUsername());
             return user;
         } else {
-            throw new NotFoundException();
+            LOGGER.debug("User {} tried to authenticate with wrong password", userDto.getUsername());
+            throw new UnathorizedException(String.format(
+                    "User %s authenticated with wrong password",
+                    userDto.getUsername()
+            ));
         }
     }
 
@@ -88,7 +98,7 @@ public class AuthService implements IAuthService {
             byte[] hmacBytes = mac.doFinal(valueBytes);
             return Base64.getEncoder().encodeToString(hmacBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+            throw new InternalAuthenticationException(e);
         }
     }
 }

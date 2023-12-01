@@ -4,6 +4,7 @@ import com.dev.listmanager.dto.UserDto;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.entity.UserCookie;
 import com.dev.listmanager.exception.NotFoundException;
+import com.dev.listmanager.exception.UnathorizedException;
 
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public interface IAuthService {
 
     Optional<UserCookie> findCookie(String cookie);
 
-    User authenticate(UserDto userDto) throws NotFoundException;
+    User authenticate(UserDto userDto) throws UnathorizedException;
 
     User findByUsername(String username) throws NotFoundException;
 

@@ -1,0 +1,121 @@
+.invalid-list {
+    align-items: center;
+    justify-content: center;
+
+    h1 {
+        cursor: text;
+
+        margin: 0;
+
+        font-size: 72px;
+        font-weight: 700;
+        font-style: normal;
+        line-height: normal;
+        color: #006E21;
+        text-align: left;
+    }
+
+    p {
+        margin: 0;
+
+        font-size: 24px;
+        font-weight: 400;
+        font-style: normal;
+        line-height: normal;
+        color: #1A1C19;
+        text-align: left;
+
+        a {
+            color: #006E21;
+            text-decoration: underline;
+        }
+    }
+}
+
+.home {
+    gap: 0;
+    align-items: center;
+    justify-content: center;
+
+    h1 {
+        cursor: text;
+
+        margin: 0;
+
+        font-size: 72px;
+        font-weight: 700;
+        font-style: normal;
+        line-height: normal;
+        color: #006E21;
+        text-align: left;
+    }
+
+    h2 {
+        margin: 0;
+
+        font-size: 36px;
+        font-weight: 400;
+        font-style: normal;
+        line-height: normal;
+        color: #006E21;
+        text-align: left;
+    }
+
+    p {
+        margin: 0;
+
+        font-size: 24px;
+        font-weight: 400;
+        font-style: normal;
+        line-height: normal;
+        color: #1A1C19;
+        text-align: left;
+
+        a {
+            color: #006E21;
+            text-decoration: underline;
+        }
+    }
+
+    .link-form {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        align-items: center;
+        justify-content: center;
+
+        margin-top: 24px;
+
+        button {
+            cursor: pointer;
+
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+
+            height: 36px;
+            padding: 8px 24px;
+
+            font-size: 14px;
+            font-weight: 400;
+            font-style: normal;
+            line-height: normal;
+            color: var(--material-theme-sys-light-on-secondary-container, #101F10);
+
+            background: var(--material-theme-sys-light-secondary-container, #D5E8CF);
+            border: none;
+            border-radius: 32px;
+
+            transition: 100ms;
+
+            &:hover {
+                background: var(--material-theme-sys-light-secondary-container-hover, #C4DCC1);
+            }
+        }
+    }
+
+    .search-bar {
+        background: #E8E9E3;
+    }
+}

@@ -5,23 +5,24 @@ import com.dev.listmanager.dto.ItemListDto;
 import com.dev.listmanager.entity.Item;
 import com.dev.listmanager.entity.ItemList;
 import com.dev.listmanager.entity.Tag;
+import com.dev.listmanager.exception.ListArchivedException;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.exception.UnathorizedException;
 
 import java.util.List;
 
 public interface IItemListService {
-    Item addItem(String uuid, ItemDto itemDto);
+    Item addItem(String uuid, ItemDto itemDto) throws ListArchivedException;
 
-    void deleteItem(String uuid) throws NotFoundException;
+    void deleteItem(String uuid) throws NotFoundException, ListArchivedException;
 
-    Item updateItem(String uuid, String attributes);
+    Item updateItem(String uuid, String attributes) throws ListArchivedException, NotFoundException;
 
-    Tag addTag(String uuid, String name) throws NotFoundException;
+    Tag addTag(String uuid, String name) throws NotFoundException, ListArchivedException;
 
-    void deleteTag(String uuid) throws NotFoundException;
+    void deleteTag(String uuid) throws NotFoundException, ListArchivedException;
 
-    Tag updateTag(String uuid, String name) throws NotFoundException;
+    Tag updateTag(String uuid, String name) throws NotFoundException, ListArchivedException;
 
     List<ItemList> getAllLists();
 
@@ -39,9 +40,9 @@ public interface IItemListService {
 
     List<ItemList> getListsByCookie(String cookie) throws UnathorizedException, NotFoundException;
 
-    ItemList createList(String cookie, ItemListDto list) throws UnathorizedException;
+    ItemList createList(String cookie, ItemListDto list) throws UnathorizedException, NotFoundException;
 
-    ItemList updateList(String id, String attributes);
+    ItemList updateList(String id, String attributes) throws NotFoundException;
 
     void deleteList(String id) throws NotFoundException;
 }
