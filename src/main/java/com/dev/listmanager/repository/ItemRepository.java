@@ -11,5 +11,4 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
 
     Optional<Item> findByName(String name);
 
-    Optional<Item> findByNameLikeIgnoreCase(String name);
 }

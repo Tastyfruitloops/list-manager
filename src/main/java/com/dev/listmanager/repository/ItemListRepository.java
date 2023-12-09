@@ -13,7 +13,5 @@ public interface ItemListRepository extends JpaRepository<ItemList, UUID> {
 
     Optional<ItemList> findByName(String name);
 
-    Optional<ItemList> findByNameLikeIgnoreCase(String name);
-
     List<ItemList> findAllByOwner(User user);
 }

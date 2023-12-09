@@ -57,10 +57,6 @@ public class Tag {
         this.name = name;
     }
 
-    public void setId(String id) {
-        this.id = UUID.fromString(id);
-    }
-
     public List<Item> getItems() {
         return items;
     }
