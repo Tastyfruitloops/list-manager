@@ -30,7 +30,6 @@ public class RequestWrapper extends HttpServletRequestWrapper {
                 bufferedReader.close();
             }
         }
-        //Store request pody content in 'body' variable
         body = stringBuilder.toString();
     }
 
@@ -64,7 +63,6 @@ public class RequestWrapper extends HttpServletRequestWrapper {
         return new BufferedReader(new InputStreamReader(this.getInputStream()));
     }
 
-    //Use this method to read the request body N times
     public String getBody() {
         return this.body;
     }

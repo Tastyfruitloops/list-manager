@@ -1,6 +1,7 @@
 package com.dev.listmanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ public class UserCookie {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotBlank(message = "Cookie cannot be blank")
     @Column(name = "cookie")
     private String cookie;
 
@@ -19,10 +21,6 @@ public class UserCookie {
 
     public UserCookie(String cookie) {
         this.cookie = cookie;
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     public String getCookie() {
