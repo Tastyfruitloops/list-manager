@@ -2,6 +2,9 @@ package com.dev.listmanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +17,12 @@ public class ItemList {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 1, max = 32)
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotNull(message = "Owner cannot be null")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
