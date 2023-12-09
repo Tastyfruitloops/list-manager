@@ -17,6 +17,15 @@ public class ItemDto {
         this.tagIds = tagIds;
     }
 
+    public boolean equals(Object o) {
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+
+        ItemDto castedO = (ItemDto) o;
+        return castedO.getName().equals(this.name) && castedO.getTagIds().equals(this.tagIds);
+    }
+
     public String getName() {
         return name;
     }

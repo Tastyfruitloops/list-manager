@@ -23,10 +23,6 @@ public class UserCookie {
         this.cookie = cookie;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     public String getCookie() {
         return cookie;
     }

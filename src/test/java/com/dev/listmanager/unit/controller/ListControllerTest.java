@@ -1,6 +1,8 @@
 package com.dev.listmanager.unit.controller;
 
 import com.dev.listmanager.controller.ListController;
+import com.dev.listmanager.dto.ItemDto;
+import com.dev.listmanager.dto.ItemListDto;
 import com.dev.listmanager.dto.TagDto;
 import com.dev.listmanager.entity.Item;
 import com.dev.listmanager.entity.ItemList;
@@ -16,8 +18,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +29,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,10 +58,7 @@ public class ListControllerTest {
         List<ItemList> lists = Arrays.asList(new ItemList("List1", user), new ItemList("List2", user));
         when(itemListService.getListsByCookie("username&token")).thenReturn(lists);
 
-        mockMvc.perform(get("/lists/").cookie(new Cookie("token", "username&token"))
-                        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(lists.get(0).getName())))
-                .andExpect(jsonPath("$[1].name", is(lists.get(1).getName())));
+        mockMvc.perform(get("/lists/").cookie(new Cookie("token", "username&token")).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is(lists.get(0).getName()))).andExpect(jsonPath("$[1].name", is(lists.get(1).getName())));
     }
 
     @Test
@@ -65,8 +67,7 @@ public class ListControllerTest {
         ItemList list = new ItemList("List1", user);
         when(itemListService.getListById("1")).thenReturn(list);
 
-        mockMvc.perform(get("/lists/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(list.getName())));
+        mockMvc.perform(get("/lists/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.name", is(list.getName())));
     }
 
 
@@ -75,10 +76,28 @@ public class ListControllerTest {
         TagDto tagDto = new TagDto("Tag1");
         Tag tag = new Tag("Tag1", null);
         when(itemListService.addTag("1", tagDto.getName())).thenReturn(tag);
-        System.out.println(objectMapper.writeValueAsString(tagDto));
-        mockMvc.perform(post("/lists/1/tag").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tagDto))).andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(tag.getName())));
+
+        mockMvc.perform(post("/lists/1/tag").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tagDto))).andDo(print()).andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(tag.getName())));
+    }
+
+    @Test
+    public void testCreateList() throws Exception {
+        User user = new User("username", "password");
+        ItemListDto itemListDto = new ItemListDto("List1");
+        ItemList list = new ItemList("List1", user);
+        when(itemListService.createList("username&token", itemListDto)).thenReturn(list);
+
+        mockMvc.perform(post("/lists/").cookie(new Cookie("token", "username&token")).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(itemListDto))).andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(list.getName())));
+
+    }
+
+    @Test
+    public void testCreateItem() throws Exception {
+        ItemDto itemDto = new ItemDto("Item1", new ArrayList<>());
+        Item item = new Item(new ItemList(), "Item1", new ArrayList<>());
+        when(itemListService.addItem("1", itemDto)).thenReturn(item);
+
+        mockMvc.perform(post("/lists/1/item").contentType(MediaType.APPLICATION_JSON).characterEncoding(StandardCharsets.UTF_8).content(objectMapper.writeValueAsString(itemDto))).andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(item.getName())));
     }
 
     @Test
@@ -89,8 +108,7 @@ public class ListControllerTest {
         when(itemListService.updateList("1", attributes)).thenReturn(list);
 
 
-        mockMvc.perform(put("/lists/1").contentType(MediaType.APPLICATION_JSON).content(attributes))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(list.getName())));
+        mockMvc.perform(put("/lists/1").contentType(MediaType.APPLICATION_JSON).content(attributes)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.name").value(list.getName()));
     }
 
     @Test
@@ -99,8 +117,7 @@ public class ListControllerTest {
         Item item = new Item(new ItemList(), "Test Item", new ArrayList<>());
         when(itemListService.updateItem("1", attributes)).thenReturn(item);
 
-        mockMvc.perform(put("/lists/item/1").contentType(MediaType.APPLICATION_JSON).content(attributes))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(item.getName())));
+        mockMvc.perform(put("/lists/item/1").contentType(MediaType.APPLICATION_JSON).content(attributes)).andExpect(status().isOk()).andExpect(jsonPath("$.name", is(item.getName())));
     }
 
     @Test
@@ -109,9 +126,7 @@ public class ListControllerTest {
         Tag tag = new Tag("newName", null);
         when(itemListService.updateTag("1", tagDto.getName())).thenReturn(tag);
 
-        mockMvc.perform(put("/lists/tag/1").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tagDto))).andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(tag.getName())));
+        mockMvc.perform(put("/lists/tag/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tagDto))).andExpect(status().isOk()).andExpect(jsonPath("$.name", is(tag.getName())));
     }
 
     @Test
@@ -121,13 +136,11 @@ public class ListControllerTest {
 
     @Test
     public void testDeleteItem() throws Exception {
-        mockMvc.perform(delete("/lists/item/1").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/lists/item/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 
     @Test
     public void testDeleteTag() throws Exception {
-        mockMvc.perform(delete("/lists/tag/1").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/lists/tag/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
     }
 }
