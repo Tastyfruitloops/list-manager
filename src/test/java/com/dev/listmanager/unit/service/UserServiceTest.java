@@ -5,6 +5,8 @@ import com.dev.listmanager.entity.ItemList;
 import com.dev.listmanager.entity.User;
 import com.dev.listmanager.exception.NotFoundException;
 import com.dev.listmanager.repository.ItemListRepository;
+import com.dev.listmanager.repository.ItemRepository;
+import com.dev.listmanager.repository.TagRepository;
 import com.dev.listmanager.repository.UserRepository;
 import com.dev.listmanager.service.UserService;
 import jakarta.validation.Validator;
@@ -29,6 +31,11 @@ public class UserServiceTest {
     @Mock
     private ItemListRepository itemListRepository;
 
+    @Mock
+    private ItemRepository itemRepository;
+
+    @Mock
+    private TagRepository tagRepository;
 
     @Mock
     private ValidatorFactory validatorFactory;
