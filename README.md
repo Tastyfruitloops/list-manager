@@ -16,7 +16,7 @@ List Manager is a versatile platform that allows users to create, edit, and shar
 The following environment variables need to be set in the '.env' file:
 ```properties
 # The URL of your PostgreSQL database.
-SPRING_DATASOURCE_URL= 
+SPRING_DATASOURCE_URL=
 
 # The username for your PostgreSQL database.
 SPRING_DATASOURCE_USERNAME=
@@ -28,10 +28,10 @@ SPRING_DATASOURCE_PASSWORD=
 POSTGRES_USER=
 
 #  The password for your PostgreSQL service.
-POSTGRES_PASSWORD=
+POSTGRES_PASSWORD`=
 
 # The URL of your API (locates in /frontend)
-VITE_API_URL=
+VITE_API_URL= 
 ```
 ## Installation
 
@@ -57,6 +57,20 @@ yarn run dev
 ```
 This will install the necessary dependencies and start the development server.
 
+## Tests
+
+This project uses JUnit and Mockito for unit testing and integration testing.
+
+To run the tests, use the following command:
+
+```bash
+mvn test
+```
+The tests cover all the service and controller layers, ensuring the correct behavior of the application.
+
+We strive to maintain a high level of code coverage and regularly check this using coverage from IntelliJ IDEA.
+
+The current code coverage is 80%.
 ## License
 
 [MIT License](LICENSE)
