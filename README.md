@@ -24,11 +24,11 @@ SPRING_DATASOURCE_USERNAME=
 # The password for your PostgreSQL database.
 SPRING_DATASOURCE_PASSWORD=
 
-#  The username for your PostgreSQL service.
+# The username for your PostgreSQL service.
 POSTGRES_USER=
 
-#  The password for your PostgreSQL service.
-POSTGRES_PASSWORD`=
+# The password for your PostgreSQL service.
+POSTGRES_PASSWORD=
 
 # The URL of your API (locates in /frontend)
 VITE_API_URL= 
