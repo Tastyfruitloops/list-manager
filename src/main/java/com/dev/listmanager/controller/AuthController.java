@@ -78,9 +78,6 @@ public class AuthController {
             authService.deleteCookie(value);
         });
 
-        ResponseCookie cookie = ResponseCookie.from(CookieAuthFilter.COOKIE_NAME, "").httpOnly(false).sameSite("None")
-                .secure(true).maxAge(0).path("/").build();
-
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+        return ResponseEntity.ok().build();
     }
 }
