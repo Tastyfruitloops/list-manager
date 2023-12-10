@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -277,5 +278,27 @@ public class ItemListServiceTest {
         itemListService.deleteList(uuid.toString());
 
         verify(itemListRepository, times(1)).delete(any(ItemList.class));
+    }
+
+    @Test
+    public void testListArchivedException() {
+        UUID uuid = UUID.randomUUID();
+        User user = new User("testUser", "testPassword");
+        ItemList itemList = new ItemList("testList", user);
+        itemList.setArchived(true);
+        ItemDto itemDto = new ItemDto("testItem", Collections.singletonList(uuid.toString()));
+        Item item = new Item(itemList, "testItem", Collections.emptyList());
+        TagDto tagDto = new TagDto("testTag");
+
+        when(itemListRepository.findById(uuid)).thenReturn(Optional.of(itemList));
+        when(itemRepository.findById(uuid)).thenReturn(Optional.of(item));
+        when(tagRepository.findById(uuid)).thenReturn(Optional.of(new Tag(tagDto.getName(), itemList)));
+
+        assertThrows(ListArchivedException.class, () -> itemListService.addItem(uuid.toString(), itemDto));
+        assertThrows(ListArchivedException.class, () -> itemListService.deleteItem(uuid.toString()));
+        assertThrows(ListArchivedException.class, () -> itemListService.updateItem(uuid.toString(), "{\"name\":\"updatedItem\"}"));
+        assertThrows(ListArchivedException.class, () -> itemListService.addTag(uuid.toString(), tagDto.getName()));
+        assertThrows(ListArchivedException.class, () -> itemListService.deleteTag(uuid.toString()));
+        assertThrows(ListArchivedException.class, () -> itemListService.updateTag(uuid.toString(), "updatedTag"));
     }
 }
