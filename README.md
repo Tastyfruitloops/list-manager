@@ -28,10 +28,10 @@ SPRING_DATASOURCE_PASSWORD=
 POSTGRES_USER=
 
 #  The password for your PostgreSQL service.
-POSTGRES_PASSWORD`=
+POSTGRES_PASSWORD=
 
 # The URL of your API (locates in /frontend)
--VITE_API_URL`: 
+VITE_API_URL=
 ```
 ## Installation
 
